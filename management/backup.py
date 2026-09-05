@@ -1,11 +1,8 @@
 #!/usr/local/lib/Ocean3inaBox/env/bin/python
 
-# This script performs a backup of all user data:
-# 1) System services are stopped.
-# 2) STORAGE_ROOT/backup/before-backup is executed if it exists.
-# 3) An incremental encrypted backup is made using duplicity.
-# 4) The stopped services are restarted.
-# 5) STORAGE_ROOT/backup/after-backup is executed if it exists.
+# This script performs encrypted backups of user data and a small,
+# whitelisted system snapshot. MariaDB stays online while its logical dumps
+# are made, then mail/PHP services are stopped for the duplicity backup.
 
 import os, os.path, re, datetime, sys
 import dateutil.parser, dateutil.relativedelta, dateutil.tz
@@ -14,7 +11,25 @@ import rtyaml
 from exclusiveprocess import Lock
 
 from utils import load_environment, shell, wait_for_service
+from system_backup import create_system_snapshot, host_restore_requested, restore_system_snapshot
 import operator
+
+def print_help():
+	print("""Usage:
+  management/backup.py [--full]
+  management/backup.py --verify | --list | --status | --duplicity-command
+  management/backup.py --restore <duplicity restore arguments>
+  management/backup.py --restore-system RESTORED_STORAGE_ROOT [--restore-host-config]
+
+Backups include STORAGE_ROOT and a whitelisted system snapshot containing
+managed service configuration, Telegram state, UFW, Fail2ban, and managed
+WordPress/CiviCRM MariaDB dumps. To restore system state, first restore
+STORAGE_ROOT with --restore, then run --restore-system on that restored root.
+Backups also retain a separate, strictly whitelisted hostname, networking, and
+SSH daemon configuration snapshot (never SSH keys). System restore asks before
+applying it. Without a TTY it remains excluded unless --restore-host-config is
+supplied explicitly.
+""")
 
 def backup_status(env):
 	# If backups are disabled, return no status.
@@ -292,6 +307,11 @@ def perform_backup(full_backup):
 		# be an error already.
 		print(e)
 		sys.exit(1)
+
+	# MariaDB remains online: logical dumps need its local socket. This is
+	# deliberately before the mail/PHP services stop, and the snapshot lives
+	# outside STORAGE_ROOT/backup so duplicity includes it.
+	create_system_snapshot(env["STORAGE_ROOT"])
 
 	# Stop services.
 	def service_command(service, command, quit=None):
@@ -623,7 +643,10 @@ def write_backup_config(env, newconfig):
 		f.write(rtyaml.dump(newconfig))
 
 if __name__ == "__main__":
-	if sys.argv[-1] == "--verify":
+	if len(sys.argv) == 2 and sys.argv[1] in ("--help", "-h"):
+		print_help()
+
+	elif sys.argv[-1] == "--verify":
 		# Run duplicity's verification command to check a) the backup files
 		# are readable, and b) report if they are up to date.
 		run_duplicity_verification()
@@ -643,6 +666,15 @@ if __name__ == "__main__":
 		# Run duplicity restore. Rest of command line passed as arguments
 		# to duplicity. The restore path should be specified.
 		run_duplicity_restore(sys.argv[2:])
+
+	elif len(sys.argv) in (3, 4) and sys.argv[1] == "--restore-system" and (len(sys.argv) == 3 or sys.argv[3] == "--restore-host-config"):
+		# This intentionally does not invoke duplicity. Restore STORAGE_ROOT
+		# first, then apply the whitelisted system state from its snapshot.
+		restore_system_snapshot(sys.argv[2], host_restore_requested("--restore-host-config" in sys.argv))
+
+	elif len(sys.argv) >= 2 and sys.argv[1] == "--restore-system":
+		print("Usage: management/backup.py --restore-system RESTORED_STORAGE_ROOT [--restore-host-config]", file=sys.stderr)
+		sys.exit(2)
 
 	elif sys.argv[-1] == "--duplicity-command":
 		print_duplicity_command()

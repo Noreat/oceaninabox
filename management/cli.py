@@ -74,8 +74,25 @@ if len(sys.argv) < 2:
   {cli} alias add incoming.name@domain.com sent.to@other.domain.com
   {cli} alias add incoming.name@domain.com 'sent.to@other.domain.com, multiple.people@other.domain.com'
   {cli} alias remove incoming.name@domain.com
+  management/plesk_import.py --source-host plesk.example.com --ssh-identity /root/.ssh/plesk-import --credentials source-passwords.csv --destination-passwords new-passwords.csv
+  management/telegram_notify.py configure --token 123456:token --chat-id -1001234567890
+  management/telegram_notify.py send-report
+  management/telegram_notify.py send-wordpress-changes
+  management/telegram_notify.py poll
 
 Removing a mail user does not delete their mail folders on disk. It only prevents IMAP/SMTP login.
+
+Plesk import requires root SSH key authentication to the source host. source-passwords.csv and
+new-passwords.csv must be mode 0600 and have email,password columns. Run with --dry-run first.
+
+Telegram notifications use /etc/mailinabox-telegram.conf (mode 0600), or --token and --chat-id
+can be provided together when running send-report manually.
+Recipients with WordPress integrity permission can request the latest safe change details with
+/wordpress-details after an integrity-change notification.
+Telegram log commands: /logs and /log <mailinabox|nginx-access|nginx-error|mail|fail2ban|system>
+[tail|full|grep <text>].
+Telegram system commands: /system, /users, /ports, and /largest [directories|files].
+Telegram WordPress command: /wordpress-changes.
 """.format(
 	cli="management/cli.py"
 		))

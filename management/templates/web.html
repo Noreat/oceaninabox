@@ -25,7 +25,9 @@
                 <tr>
                         <th scope="col">Site</th>
                         <th scope="col">Directory for Files</th>
-			<th scope="col" aria-label="Actions"/>
+			<th scope="col" aria-label="Actions"></th>
+			<th scope="col">WordPress</th>
+			<th scope="col">CiviCRM</th>
                 </tr>
         </thead>
         <tbody>
@@ -36,6 +38,9 @@
 
 </ol>
 
+<h3>WordPress</h3>
+<p>For an empty static web directory, you can install a new WordPress site below. This does not replace existing static files. WordPress support must have been selected when this box was set up.</p>
+
 <script>
 function show_web() {
  api(
@@ -44,11 +49,26 @@ function show_web() {
     {
     },
     function(domains) {
+	api(
+		"/wordpress/status",
+		"GET",
+		{},
+		function(wordpress) { render_web_domains(domains, wordpress); },
+		function() { render_web_domains(domains, { enabled: false, domains: [] }); }
+	);
+    });
+}
+
+function render_web_domains(domains, wordpress) {
+	var wordpress_domains = {};
+	for (var i = 0; i < wordpress.domains.length; i++)
+		wordpress_domains[wordpress.domains[i].domain] = wordpress.domains[i];
+
 	var tb = $('#web_domains_existing tbody');
 	tb.text('');
 	for (var i = 0; i < domains.length; i++) {
 		if (!domains[i].static_enabled) continue;
-		var row = $("<tr><th scope='colgroup' class='domain'><a href=''></a></th><td class='directory'><tt/></td> <td class='change-root hidden'><button class='btn btn-default btn-xs' onclick='show_change_web_root(this)'>Change</button></td></tr>");
+		var row = $("<tr><th scope='colgroup' class='domain'><a href=''></a></th><td class='directory'><tt/></td><td class='change-root hidden'><button class='btn btn-default btn-xs' onclick='show_change_web_root(this)'>Change</button></td><td class='wordpress'></td><td class='civicrm'></td></tr>");
 		tb.append(row);
 		row.attr('data-domain', domains[i].domain);
 		row.attr('data-custom-web-root', domains[i].custom_root);
@@ -57,9 +77,72 @@ function show_web() {
 		row.find('.directory tt').text(domains[i].root);
 		if (domains[i].root != domains[i].custom_root)
 			row.find('.change-root').removeClass('hidden');
+
+		var wordpress_domain = wordpress_domains[domains[i].domain];
+		if (wordpress_domain && wordpress_domain.installed) {
+			row.find('.wordpress').text('WordPress installed');
+		} else if (wordpress_domain && wordpress_domain.can_install) {
+			var install = $("<button class='btn btn-primary btn-xs'>Install WordPress</button>");
+			install.click(function() { show_wordpress_install($(this).parents('tr').attr('data-domain')); });
+			row.find('.wordpress').append(install);
+		}
+		if (wordpress_domain && wordpress_domain.civicrm_installed) {
+			row.find('.civicrm').text('CiviCRM installed');
+		} else if (wordpress_domain && wordpress_domain.can_install_civicrm) {
+			var civicrm_install = $("<button class='btn btn-default btn-xs'>Install CiviCRM</button>");
+			civicrm_install.click(function() { install_civicrm($(this).parents('tr').attr('data-domain')); });
+			row.find('.civicrm').append(civicrm_install);
+		}
 	}
 
-    });
+	function install_civicrm(domain) {
+		show_modal_confirm(
+			'Install CiviCRM',
+			$('<p/>').text('Install and activate CiviCRM on https://' + domain + '? You will complete its database setup in the WordPress administrator afterward.'),
+			'Install',
+			function() {
+				api(
+					"/civicrm/install",
+					"POST",
+					{ domain: domain },
+					function(result) {
+						var message = $('<p/>');
+						message.append('CiviCRM is installed. Complete the required setup at ');
+						message.append($('<a target="_blank"/>').attr('href', result.installer_url).text(result.installer_url));
+						show_modal_error('CiviCRM installed', message, show_web);
+					},
+					function(error) { show_modal_error('CiviCRM installation', $('<pre/>').text(error)); }
+				);
+			}
+		);
+	}
+}
+
+function show_wordpress_install(domain) {
+	var question = $('<div/>');
+	question.append($('<p/>').text('Install a new WordPress site at https://' + domain + '?'));
+	question.append($('<p/>').text('This only works because the domain-specific directory is empty. Existing files will not be replaced.'));
+	var title_input = $('<input type="text" class="form-control" maxlength="200" required>');
+	title_input.attr('id', 'wordpress_title').val(domain);
+	var email_input = $('<input type="email" class="form-control" required>');
+	email_input.attr('id', 'wordpress_email').val(api_credentials ? api_credentials.username : '');
+	question.append($('<p/>').append($('<label for="wordpress_title"/>').text('Site title')).append(title_input));
+	question.append($('<p/>').append($('<label for="wordpress_email"/>').text('Administrator email')).append(email_input));
+	show_modal_confirm('Install WordPress', question, 'Install', function() {
+		api(
+			"/wordpress/install",
+			"POST",
+			{ domain: domain, title: title_input.val(), email: email_input.val() },
+			function(result) {
+				var message = $('<div/>');
+				message.append($('<p/>').text('WordPress is installed at ' + result.url + '. Sign in with username ' + result.admin_user + '.'));
+				message.append($('<p/>').text('Save this password now. It will not be shown again:'));
+				message.append($('<p/>').append($('<code style="font-size: 110%"/>').text(result.admin_password)));
+				show_modal_error('WordPress installed', message, show_web);
+			},
+			function(error) { show_modal_error('WordPress installation', $('<pre/>').text(error)); }
+		);
+	});
 }
 
 function do_web_update() {

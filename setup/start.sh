@@ -104,6 +104,7 @@ PRIVATE_IPV6=$PRIVATE_IPV6
 MTA_STS_MODE=${DEFAULT_MTA_STS_MODE:-enforce}
 INSTALL_NEXTCLOUD=$INSTALL_NEXTCLOUD
 INSTALL_WORDPRESS=$INSTALL_WORDPRESS
+INSTALL_CIVICRM=$INSTALL_CIVICRM
 EOF
 
 SETUP_STATE_FILE=/var/lib/Ocean3inaBox/setup-state
@@ -172,6 +173,9 @@ run_setup_step 6 "mail user configuration" setup/mail-users.sh
 run_setup_step 7 "DKIM configuration" setup/dkim.sh
 run_setup_step 8 "spam filtering configuration" setup/spamassassin.sh
 run_setup_step 9 "web server configuration" setup/web.sh
+if [ "$INSTALL_CIVICRM" = 1 ]; then
+	source setup/civicrm.sh
+fi
 run_setup_step 10 "webmail configuration" setup/webmail.sh
 if [ "$NEXT_SETUP_STEP" -le 11 ]; then
 	if [ "$INSTALL_NEXTCLOUD" = 1 ]; then

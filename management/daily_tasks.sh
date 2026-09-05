@@ -21,5 +21,19 @@ management/backup.py 2>&1 | management/email_administrator.py "Backup Status"
 # Provision any new certificates for new domains or domains with expiring certificates.
 management/ssl_certificates.py -q  2>&1 | management/email_administrator.py "TLS Certificate Provisioning Result"
 
+# Record changes to managed WordPress installations before preparing notifications.
+management/wordpress_integrity.py scan
+
+# WordPress-authorized Telegram recipients get an opt-in details prompt only
+# when the latest scan found a filesystem or managed database change.
+if [ -f /etc/mailinabox-telegram.conf ]; then
+	management/telegram_notify.py send-wordpress-changes
+fi
+
 # Run status checks and email the administrator if anything changed.
 management/status_checks.py --show-changes  2>&1 | management/email_administrator.py "Status Checks Change Notice"
+
+# Notify Telegram if it has been configured. A missing configuration is normal.
+if [ -f /etc/mailinabox-telegram.conf ]; then
+	management/telegram_notify.py send-report
+fi

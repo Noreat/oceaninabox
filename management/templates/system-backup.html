@@ -6,6 +6,7 @@
 <h2>Backup Status</h2>
 
 <p>The box makes an incremental backup each night. You can store the backup on any Amazon Web Services S3-compatible service, or other options.</p>
+<p>Backups also include managed web/mail service configuration, Telegram state, UFW, Fail2ban, and managed WordPress/CiviCRM databases. To restore these, restore user data first and then run <tt>management/backup.py --restore-system RESTORED_STORAGE_ROOT</tt>. A separate, whitelisted snapshot retains hostname, network, and SSH daemon configuration (never SSH keys); restoration prompts before applying it. For non-interactive restores, add <tt>--restore-host-config</tt> only when intentionally moving these host-specific settings.</p>
 
 <h3>Configuration</h3>
 

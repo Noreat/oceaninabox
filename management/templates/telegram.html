@@ -1,0 +1,142 @@
+<h2>Telegram Access</h2>
+
+<p>Grant a Telegram chat only the commands and daily reports it needs. Chat IDs must be numeric; channels cannot send bot commands. The original owner always retains every command and daily reports.</p>
+
+<div id="telegram-not-configured" class="alert alert-warning" style="display: none">
+  Telegram has not been configured. Configure the bot token and original owner with <tt>management/telegram_notify.py configure</tt> before adding recipients.
+</div>
+
+<h3>Add recipient</h3>
+<form id="telegram-add-form" class="form-inline" onsubmit="add_telegram_recipient(); return false;">
+  <div class="form-group">
+    <label class="sr-only" for="telegram-chat-id">Chat ID</label>
+    <input id="telegram-chat-id" class="form-control" required pattern="-?[0-9]+" maxlength="32" placeholder="Numeric chat ID">
+  </div>
+  <div class="form-group">
+    <label class="sr-only" for="telegram-label">Label</label>
+    <input id="telegram-label" class="form-control" required maxlength="128" placeholder="Name or label">
+  </div>
+  <label class="checkbox-inline"><input id="telegram-logs" type="checkbox"> Logs</label>
+  <label class="checkbox-inline"><input id="telegram-system" type="checkbox"> System</label>
+  <label class="checkbox-inline"><input id="telegram-wordpress" type="checkbox"> WordPress integrity</label>
+  <label class="checkbox-inline"><input id="telegram-daily-report" type="checkbox"> Daily report</label>
+  <button type="submit" class="btn btn-primary">Add recipient</button>
+</form>
+
+<table id="telegram-recipients" class="table">
+  <thead>
+    <tr>
+      <th scope="col">Label</th>
+      <th scope="col">Chat ID</th>
+      <th scope="col">Commands</th>
+      <th scope="col">Notifications</th>
+      <th scope="col" aria-label="Actions"></th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<script>
+function telegram_permission_data(prefix) {
+  return {
+    logs: $('#' + prefix + '-logs').is(':checked') ? '1' : '0',
+    system: $('#' + prefix + '-system').is(':checked') ? '1' : '0',
+    wordpress: $('#' + prefix + '-wordpress').is(':checked') ? '1' : '0',
+    daily_report: $('#' + prefix + '-daily-report').is(':checked') ? '1' : '0'
+  };
+}
+
+function show_telegram() {
+  api('/telegram/recipients', 'GET', {}, function(result) {
+    $('#telegram-not-configured').toggle(!result.configured);
+    $('#telegram-add-form :input').prop('disabled', !result.configured);
+    render_telegram_recipients(result.recipients || []);
+  });
+}
+
+function render_telegram_recipients(recipients) {
+  var body = $('#telegram-recipients tbody').text('');
+  if (!recipients.length) {
+    body.append($('<tr/>').append($('<td colspan="5" class="text-muted"/>').text('No Telegram recipients are configured.')));
+    return;
+  }
+  recipients.forEach(function(recipient) {
+    var permissions = recipient.permissions || {};
+    var commands = [];
+    if (permissions.logs) commands.push('Logs');
+    if (permissions.system) commands.push('System');
+    if (permissions.wordpress) commands.push('WordPress integrity');
+    var row = $('<tr/>');
+    row.append($('<td/>').text(recipient.label + (recipient.owner ? ' (owner)' : '')));
+    row.append($('<td><code/></td>').find('code').text(recipient.chat_id).end());
+    row.append($('<td/>').text(commands.join(', ') || 'None'));
+    row.append($('<td/>').text(permissions.daily_report ? 'Daily update report' : 'None'));
+    var actions = $('<td/>');
+    var edit = $('<button type="button" class="btn btn-default btn-xs"/>').text('Edit');
+    edit.click(function() { edit_telegram_recipient(recipient); });
+    actions.append(edit);
+    if (!recipient.owner) {
+      var remove = $('<button type="button" class="btn btn-danger btn-xs" style="margin-left: 4px"/>').text('Delete');
+      remove.click(function() { delete_telegram_recipient(recipient); });
+      actions.append(remove);
+    }
+    row.append(actions);
+    body.append(row);
+  });
+}
+
+function add_telegram_recipient() {
+  var data = telegram_permission_data('telegram');
+  data.chat_id = $('#telegram-chat-id').val();
+  data.label = $('#telegram-label').val();
+  api('/telegram/recipients', 'POST', data, function() {
+    $('#telegram-add-form')[0].reset();
+    show_telegram();
+  }, function(error) {
+    show_modal_error('Adding Telegram recipient', $('<pre/>').text(error));
+  });
+}
+
+function edit_telegram_recipient(recipient) {
+  var permissions = recipient.permissions || {};
+  var form = $('<form/>');
+  var label = $('<input type="text" class="form-control" maxlength="128" required id="telegram-edit-label">').val(recipient.label);
+  form.append($('<p/>').append($('<label for="telegram-edit-label"/>').text('Label')).append(label));
+  form.append($('<p/>').append($('<code/>').text('Chat ID: ' + recipient.chat_id)));
+  [
+    ['logs', 'Logs'],
+    ['system', 'System'],
+    ['wordpress', 'WordPress integrity'],
+    ['daily-report', 'Daily update report']
+  ].forEach(function(item) {
+    var key = item[0] === 'daily-report' ? 'daily_report' : item[0];
+    var checkbox = $('<input type="checkbox">').attr('id', 'telegram-edit-' + item[0]).prop('checked', !!permissions[key]);
+    if (recipient.owner) checkbox.prop('disabled', true);
+    form.append($('<p class="checkbox"/>').append($('<label/>').append(checkbox).append(' ' + item[1])));
+  });
+  if (recipient.owner)
+    form.append($('<p class="text-muted"/>').text('Owner permissions are permanent to prevent accidental lockout.'));
+  show_modal_confirm('Edit Telegram recipient', form, 'Save', function() {
+    var data = telegram_permission_data('telegram-edit');
+    data.label = label.val();
+    api('/telegram/recipients/' + encodeURIComponent(recipient.chat_id), 'POST', data, function() {
+      show_telegram();
+    }, function(error) {
+      show_modal_error('Updating Telegram recipient', $('<pre/>').text(error));
+    });
+  });
+}
+
+function delete_telegram_recipient(recipient) {
+  show_modal_confirm('Delete Telegram recipient',
+    'Remove ' + recipient.label + ' (' + recipient.chat_id + ') and all of its Telegram access?',
+    'Delete',
+    function() {
+      api('/telegram/recipients/' + encodeURIComponent(recipient.chat_id), 'DELETE', {}, function() {
+        show_telegram();
+      }, function(error) {
+        show_modal_error('Deleting Telegram recipient', $('<pre/>').text(error));
+      });
+    });
+}
+</script>

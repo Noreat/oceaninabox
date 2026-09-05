@@ -552,6 +552,112 @@ def web_update():
 	from web_update import do_web_update
 	return do_web_update(env)
 
+@app.route('/wordpress/status')
+@authorized_personnel_only
+def wordpress_status():
+	from wordpress import get_wordpress_status
+	return json_response(get_wordpress_status(env))
+
+@app.route('/wordpress/install', methods=['POST'])
+@authorized_personnel_only
+def wordpress_install():
+	from wordpress import install_wordpress
+	try:
+		result = install_wordpress(
+			request.form.get("domain", ""),
+			request.form.get("title", ""),
+			request.form.get("email", "") or request.user_email,
+			env,
+		)
+	except ValueError as exc:
+		return (str(exc), 400)
+	return json_response(result)
+
+@app.route('/civicrm/install', methods=['POST'])
+@authorized_personnel_only
+def civicrm_install():
+	from civicrm import install_civicrm
+	try:
+		result = install_civicrm(request.form.get("domain", ""), env)
+	except ValueError as exc:
+		return (str(exc), 400)
+	return json_response(result)
+
+# Telegram
+
+def telegram_form_permissions():
+	return {
+		"logs": request.form.get("logs") in {"1", "true", "yes", "on"},
+		"system": request.form.get("system") in {"1", "true", "yes", "on"},
+		"wordpress": request.form.get("wordpress") in {"1", "true", "yes", "on"},
+		"daily_report": request.form.get("daily_report") in {"1", "true", "yes", "on"},
+	}
+
+
+@app.route('/telegram/status')
+@authorized_personnel_only
+def telegram_status():
+	from telegram_notify import load_telegram_config
+	try:
+		config = load_telegram_config()
+	except (OSError, ValueError):
+		return json_response({"configured": False})
+	return json_response({"configured": True, "recipient_count": len(config["recipients"])})
+
+
+@app.route('/telegram/recipients')
+@authorized_personnel_only
+def telegram_recipients():
+	from telegram_notify import load_telegram_config, public_recipients
+	try:
+		config = load_telegram_config()
+	except (OSError, ValueError):
+		return json_response({"configured": False, "recipients": []})
+	return json_response({"configured": True, "recipients": public_recipients(config)})
+
+
+@app.route('/telegram/recipients', methods=['POST'])
+@authorized_personnel_only
+def telegram_add_recipient():
+	from telegram_notify import add_recipient
+	try:
+		recipients = add_recipient(
+			"/etc/mailinabox-telegram.conf",
+			request.form.get("chat_id", ""),
+			request.form.get("label", ""),
+			telegram_form_permissions(),
+		)
+	except (OSError, ValueError) as exc:
+		return (str(exc), 400)
+	return json_response({"recipients": recipients})
+
+
+@app.route('/telegram/recipients/<chat_id>', methods=['POST', 'PUT'])
+@authorized_personnel_only
+def telegram_update_recipient(chat_id):
+	from telegram_notify import update_recipient
+	try:
+		recipients = update_recipient(
+			"/etc/mailinabox-telegram.conf",
+			chat_id,
+			request.form.get("label", ""),
+			telegram_form_permissions(),
+		)
+	except (OSError, ValueError) as exc:
+		return (str(exc), 400)
+	return json_response({"recipients": recipients})
+
+
+@app.route('/telegram/recipients/<chat_id>', methods=['DELETE'])
+@authorized_personnel_only
+def telegram_delete_recipient(chat_id):
+	from telegram_notify import delete_recipient
+	try:
+		recipients = delete_recipient("/etc/mailinabox-telegram.conf", chat_id)
+	except (OSError, ValueError) as exc:
+		return (str(exc), 400)
+	return json_response({"recipients": recipients})
+
 # System
 
 @app.route('/system/version', methods=["GET"])

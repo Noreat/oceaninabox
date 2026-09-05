@@ -45,10 +45,15 @@ tags:
       and installing custom certificates.
   - name: Web
     description: |
-      Static web hosting operations, which include getting domain information and updating domain root directories.
+      Static web hosting and WordPress operations, which include getting domain information,
+      updating domain root directories, and installing new WordPress sites.
   - name: MFA
     description: |
       Manage multi-factor authentication schemes. Currently, only TOTP is supported.
+  - name: Telegram
+    description: |
+      Manage the configured Telegram bot recipients and their access to bot commands
+      and daily update notifications. Bot credentials are never returned by this API.
   - name: System
     description: |
       System operations, which include system status checks, new version checks
@@ -1717,6 +1722,219 @@ paths:
             text/html:
               schema:
                 type: string
+  /wordpress/status:
+    get:
+      tags:
+        - Web
+      summary: Get WordPress installation status
+      description: Returns whether WordPress support is enabled and the installation status of static web domains.
+      operationId: getWordPressStatus
+      x-codeSamples:
+        - lang: curl
+          source: |
+            curl -X GET "https://{host}/admin/wordpress/status" \
+              -u "<email>:<password>"
+      responses:
+        200:
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WordPressStatusResponse'
+        403:
+          description: Forbidden
+          content:
+            text/html:
+              schema:
+                type: string
+  /wordpress/install:
+    post:
+      tags:
+        - Web
+      summary: Install WordPress for an empty static web domain
+      description: Creates a new WordPress site and returns an administrator password exactly once. It never replaces an existing web root or WordPress configuration.
+      operationId: installWordPress
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/WordPressInstallRequest'
+      x-codeSamples:
+        - lang: curl
+          source: |
+            curl -X POST "https://{host}/admin/wordpress/install" \
+              -d "domain=example.com" \
+              -d "title=Example%20Site" \
+              -d "email=admin@example.com" \
+              -u "<email>:<password>"
+      responses:
+        200:
+          description: Successful operation. Store `admin_password` securely; it cannot be retrieved again.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WordPressInstallResponse'
+        400:
+          description: WordPress support is disabled, the domain is ineligible, or its web root is not empty.
+          content:
+            text/html:
+              schema:
+                type: string
+        403:
+          description: Forbidden
+          content:
+            text/html:
+              schema:
+                type: string
+  /civicrm/install:
+    post:
+      tags:
+        - Web
+      summary: Install CiviCRM for a managed WordPress domain
+      description: Downloads and activates the CiviCRM WordPress plugin. Complete its database setup in the WordPress administrator afterward.
+      operationId: installCiviCRM
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - domain
+              properties:
+                domain:
+                  $ref: '#/components/schemas/Hostname'
+      x-codeSamples:
+        - lang: curl
+          source: |
+            curl -X POST "https://{host}/admin/civicrm/install" \
+              -d "domain=example.com" \
+              -u "<email>:<password>"
+      responses:
+        200:
+          description: CiviCRM plugin installed and activated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  domain:
+                    $ref: '#/components/schemas/Hostname'
+                  installer_url:
+                    type: string
+                    format: uri
+        400:
+          description: CiviCRM support is disabled, WordPress is absent, or the plugin is already installed.
+          content:
+            text/html:
+              schema:
+                type: string
+        403:
+          description: Forbidden
+          content:
+            text/html:
+              schema:
+                type: string
+  /telegram/status:
+    get:
+      tags:
+        - Telegram
+      summary: Get Telegram configuration status
+      description: Reports whether a Telegram bot configuration is available. It never returns the bot token.
+      operationId: getTelegramStatus
+      responses:
+        200:
+          description: Configuration status.
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [configured]
+                properties:
+                  configured:
+                    type: boolean
+                  recipient_count:
+                    type: integer
+  /telegram/recipients:
+    get:
+      tags:
+        - Telegram
+      summary: List Telegram recipients
+      description: Lists configured recipient labels, chat IDs, owner status, and permissions. It never returns the bot token.
+      operationId: listTelegramRecipients
+      responses:
+        200:
+          description: Recipient list.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelegramRecipientsResponse'
+    post:
+      tags:
+        - Telegram
+      summary: Add a Telegram recipient
+      description: Adds a numeric Telegram chat ID and its exact command and notification permissions.
+      operationId: addTelegramRecipient
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TelegramRecipientRequest'
+      responses:
+        200:
+          description: Recipient added.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelegramRecipientsUpdateResponse'
+        400:
+          description: Invalid, duplicate, or unavailable recipient configuration.
+  /telegram/recipients/{chat_id}:
+    parameters:
+      - name: chat_id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: The recipient's configured Telegram chat ID.
+    post:
+      tags:
+        - Telegram
+      summary: Update a Telegram recipient
+      description: Updates a recipient label and permissions. The original owner cannot lose its permissions.
+      operationId: updateTelegramRecipient
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TelegramRecipientUpdateRequest'
+      responses:
+        200:
+          description: Recipient updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelegramRecipientsUpdateResponse'
+        400:
+          description: Invalid or unavailable recipient configuration.
+    delete:
+      tags:
+        - Telegram
+      summary: Delete a Telegram recipient
+      description: Removes a recipient. The original owner cannot be removed.
+      operationId: deleteTelegramRecipient
+      responses:
+        200:
+          description: Recipient deleted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TelegramRecipientsUpdateResponse'
+        400:
+          description: Unknown recipient or an attempt to remove the owner.
   /mfa/status:
     post:
       tags:
@@ -1837,6 +2055,89 @@ components:
             description: The value of the DNS record.
           example: '1.2.3.4'
   schemas:
+    TelegramPermissions:
+      type: object
+      description: Exact bot command and notification grants for one recipient.
+      properties:
+        logs:
+          type: boolean
+          description: Permit `/logs` and `/log`.
+        system:
+          type: boolean
+          description: Permit `/system`, `/users`, `/ports`, and `/largest`.
+        wordpress:
+          type: boolean
+          description: Permit `/wordpress-changes`.
+        daily_report:
+          type: boolean
+          description: Deliver the daily server update report.
+    TelegramRecipient:
+      type: object
+      required: [chat_id, label, owner, permissions]
+      properties:
+        chat_id:
+          type: string
+          pattern: '^-?[0-9]+$'
+          description: Numeric Telegram chat ID. Legacy channel owners may use a channel handle.
+        label:
+          type: string
+          maxLength: 128
+        owner:
+          type: boolean
+          description: The original owner, whose all permissions are permanent.
+        permissions:
+          $ref: '#/components/schemas/TelegramPermissions'
+    TelegramRecipientRequest:
+      type: object
+      required: [chat_id, label]
+      properties:
+        chat_id:
+          type: string
+          pattern: '^-?[0-9]+$'
+        label:
+          type: string
+          maxLength: 128
+        logs:
+          type: boolean
+        system:
+          type: boolean
+        wordpress:
+          type: boolean
+        daily_report:
+          type: boolean
+    TelegramRecipientUpdateRequest:
+      type: object
+      required: [label]
+      properties:
+        label:
+          type: string
+          maxLength: 128
+        logs:
+          type: boolean
+        system:
+          type: boolean
+        wordpress:
+          type: boolean
+        daily_report:
+          type: boolean
+    TelegramRecipientsResponse:
+      type: object
+      required: [configured, recipients]
+      properties:
+        configured:
+          type: boolean
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/TelegramRecipient'
+    TelegramRecipientsUpdateResponse:
+      type: object
+      required: [recipients]
+      properties:
+        recipients:
+          type: array
+          items:
+            $ref: '#/components/schemas/TelegramRecipient'
     MailUsersResponseFormat:
       type: string
       enum:
@@ -2681,6 +2982,72 @@ components:
       type: string
       example: web updated
       description: Web update response.
+    WordPressDomainStatus:
+      type: object
+      required:
+        - can_install
+        - domain
+        - installed
+        - managed
+      properties:
+        domain:
+          $ref: '#/components/schemas/Hostname'
+        installed:
+          type: boolean
+          description: Whether a wp-config.php file is present in the domain-specific web root.
+        managed:
+          type: boolean
+          description: Whether the site has the Mail-in-a-Box WordPress nginx include.
+        can_install:
+          type: boolean
+          description: Whether support is enabled and the domain-specific root and nginx include are unused.
+    WordPressStatusResponse:
+      type: object
+      required:
+        - enabled
+        - domains
+      properties:
+        enabled:
+          type: boolean
+          description: Whether WordPress support was enabled during setup.
+        domains:
+          type: array
+          items:
+            $ref: '#/components/schemas/WordPressDomainStatus'
+    WordPressInstallRequest:
+      type: object
+      required:
+        - domain
+        - title
+      properties:
+        domain:
+          $ref: '#/components/schemas/Hostname'
+        title:
+          type: string
+          maxLength: 200
+        email:
+          $ref: '#/components/schemas/Email'
+          description: Administrator email. Omit to use the authenticated administrator's email address.
+    WordPressInstallResponse:
+      type: object
+      required:
+        - admin_password
+        - admin_user
+        - domain
+        - url
+      properties:
+        domain:
+          $ref: '#/components/schemas/Hostname'
+        url:
+          type: string
+          format: uri
+          example: https://example.com
+        admin_user:
+          type: string
+          example: admin
+        admin_password:
+          type: string
+          description: One-time WordPress administrator password. It is not retained by the management API.
     MfaStatusResponse:
       type: object
       properties:

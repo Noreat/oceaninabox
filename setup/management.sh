@@ -109,6 +109,7 @@ cat > /etc/cron.d/Ocean3inaBox-nightly << EOF;
 # Ocean3inaBox --- Do not edit / will be overwritten on update.
 # Run nightly tasks: backup, status checks.
 $minute 1 * * *	root	(cd $PWD && management/daily_tasks.sh)
+* * * * *	root	[ ! -f /etc/mailinabox-telegram.conf ] || (cd $PWD && management/telegram_notify.py poll >/dev/null 2>&1)
 EOF
 
 # Start the management server.

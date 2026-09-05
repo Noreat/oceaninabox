@@ -247,6 +247,30 @@ if [ "$INSTALL_WORDPRESS" != 0 ] && [ "$INSTALL_WORDPRESS" != 1 ]; then
 	exit 1
 fi
 
+# CiviCRM is installed as a WordPress plugin, so only offer its dependencies
+# when the integrated WordPress site is enabled.
+if [ -z "${INSTALL_CIVICRM:-}" ]; then
+	if [ -n "${DEFAULT_INSTALL_CIVICRM:-}" ]; then
+		INSTALL_CIVICRM=$DEFAULT_INSTALL_CIVICRM
+	elif [ -d "$STORAGE_ROOT/www/default/wp-content/plugins/civicrm" ]; then
+		INSTALL_CIVICRM=1
+	elif [ "$INSTALL_WORDPRESS" = 0 ] || [ -n "${NONINTERACTIVE:-}" ]; then
+		INSTALL_CIVICRM=0
+	else
+		input_menu "CiviCRM Installation" \
+			"Do you want to install CiviCRM support for donor and contact management?" \
+			"0^Do not install CiviCRM support^1^Install CiviCRM support" \
+			INSTALL_CIVICRM
+		if [ "$INSTALL_CIVICRM_EXITCODE" -ne 0 ]; then
+			exit
+		fi
+	fi
+fi
+if [ "$INSTALL_CIVICRM" != 0 ] && [ "$INSTALL_CIVICRM" != 1 ]; then
+	echo "INSTALL_CIVICRM must be set to 0 or 1."
+	exit 1
+fi
+
 # Show the configuration, since the user may have not entered it manually.
 echo
 echo "Primary Hostname: $PRIMARY_HOSTNAME"
@@ -273,5 +297,10 @@ if [ "$INSTALL_WORDPRESS" = 1 ]; then
 	echo "WordPress: enabled"
 else
 	echo "WordPress: disabled"
+fi
+if [ "$INSTALL_CIVICRM" = 1 ]; then
+	echo "CiviCRM: enabled"
+else
+	echo "CiviCRM: disabled"
 fi
 echo
