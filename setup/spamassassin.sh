@@ -20,7 +20,7 @@ source setup/functions.sh # load our functions
 # For more information see Debian Bug #689414:
 # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=689414
 echo "Installing SpamAssassin..."
-apt_install spampd razor pyzor dovecot-antispam libmail-dkim-perl
+apt_install spamassassin spampd razor pyzor dovecot-antispam libmail-dkim-perl
 
 # Allow spamassassin to download new rules.
 tools/editconf.py /etc/default/spamassassin \
@@ -194,4 +194,3 @@ chmod 770 "$STORAGE_ROOT/mail/spamassassin"
 # Kick services.
 restart_service spampd
 restart_service dovecot
-
