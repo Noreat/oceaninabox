@@ -22,9 +22,17 @@ source setup/functions.sh # load our functions
 echo "Installing SpamAssassin..."
 apt_install spamassassin spampd razor pyzor dovecot-antispam libmail-dkim-perl
 
-# Allow spamassassin to download new rules.
-tools/editconf.py /etc/default/spamassassin \
-	CRON=1
+# Allow SpamAssassin to download new rules. Ubuntu 22.04 controls the
+# daily cron job through this file; Ubuntu 24.04 provides a systemd timer.
+if [ -f /etc/default/spamassassin ]; then
+	tools/editconf.py /etc/default/spamassassin \
+		CRON=1
+elif systemctl list-unit-files spamassassin-maintenance.timer --no-legend | grep -q '^spamassassin-maintenance.timer'; then
+	systemctl enable --now spamassassin-maintenance.timer
+else
+	echo "ERROR: SpamAssassin has no supported maintenance scheduler."
+	exit 1
+fi
 
 # Configure pyzor, which is a client to a live database of hashes of
 # spam emails. Set the pyzor configuration directory to something sane.
