@@ -254,6 +254,8 @@ if [ -z "${INSTALL_CIVICRM:-}" ]; then
 		INSTALL_CIVICRM=$DEFAULT_INSTALL_CIVICRM
 	elif [ -d "$STORAGE_ROOT/www/default/wp-content/plugins/civicrm" ]; then
 		INSTALL_CIVICRM=1
+	elif [ -n "${FIRST_TIME_SETUP:-}" ]; then
+		INSTALL_CIVICRM=1
 	elif [ "$INSTALL_WORDPRESS" = 0 ] || [ -n "${NONINTERACTIVE:-}" ]; then
 		INSTALL_CIVICRM=0
 	else
