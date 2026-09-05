@@ -96,6 +96,7 @@ cat > /etc/Ocean3inaBox.conf << EOF;
 STORAGE_USER=$STORAGE_USER
 STORAGE_ROOT=$STORAGE_ROOT
 PRIMARY_HOSTNAME=$PRIMARY_HOSTNAME
+WEBMAIL_HOSTNAME=$WEBMAIL_HOSTNAME
 PUBLIC_IP=$PUBLIC_IP
 PUBLIC_IPV6=$PUBLIC_IPV6
 PRIVATE_IP=$PRIVATE_IP
@@ -228,16 +229,17 @@ fi
 # We'd let certbot ask the user interactively, but when this script is
 # run in the recommended curl-pipe-to-bash method there is no TTY and
 # certbot will fail if it tries to ask.
-if [ "$NEXT_SETUP_STEP" -le 20 ] && [ ! -d "$STORAGE_ROOT/ssl/lets_encrypt/accounts/acme-v02.api.letsencrypt.org/" ]; then
-echo
-echo "-----------------------------------------------"
-echo "Ocean3inaBox uses Let's Encrypt to provision free SSL/TLS certificates"
-echo "to enable HTTPS connections to your box. We're automatically"
-echo "agreeing you to their subscriber agreement. See https://letsencrypt.org."
-echo
-certbot register --register-unsafely-without-email --agree-tos --config-dir "$STORAGE_ROOT/ssl/lets_encrypt"
-fi
 if [ "$NEXT_SETUP_STEP" -le 20 ]; then
+	if [ ! -d "$STORAGE_ROOT/ssl/lets_encrypt/accounts/acme-v02.api.letsencrypt.org/" ]; then
+		echo
+		echo "-----------------------------------------------"
+		echo "Ocean3inaBox uses Let's Encrypt to provision free SSL/TLS certificates"
+		echo "to enable HTTPS connections to your box. We're automatically"
+		echo "agreeing you to their subscriber agreement. See https://letsencrypt.org."
+		echo
+		certbot register --register-unsafely-without-email --agree-tos --config-dir "$STORAGE_ROOT/ssl/lets_encrypt"
+	fi
+	management/ssl_certificates.py
 	NEXT_SETUP_STEP=21
 	set_next_setup_step "$NEXT_SETUP_STEP"
 fi

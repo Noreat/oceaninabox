@@ -183,6 +183,19 @@ if [ "$PRIMARY_HOSTNAME" = "auto" ]; then
 	PRIMARY_HOSTNAME=$(get_default_hostname)
 fi
 
+if [ -z "${WEBMAIL_HOSTNAME:-}" ]; then
+	if [ -n "${DEFAULT_WEBMAIL_HOSTNAME:-}" ]; then
+		WEBMAIL_HOSTNAME=$DEFAULT_WEBMAIL_HOSTNAME
+	else
+		PRIMARY_DOMAIN=${PRIMARY_HOSTNAME#*.}
+		if [ "$PRIMARY_DOMAIN" = "$PRIMARY_HOSTNAME" ]; then
+			echo "Could not derive a webmail hostname from $PRIMARY_HOSTNAME."
+			exit 1
+		fi
+		WEBMAIL_HOSTNAME=webmail.$PRIMARY_DOMAIN
+	fi
+fi
+
 # Set STORAGE_USER and STORAGE_ROOT to default values (user-data and /home/user-data), unless
 # we've already got those values from a previous run.
 if [ -z "${STORAGE_USER:-}" ]; then
@@ -237,6 +250,7 @@ fi
 # Show the configuration, since the user may have not entered it manually.
 echo
 echo "Primary Hostname: $PRIMARY_HOSTNAME"
+echo "Webmail Hostname: $WEBMAIL_HOSTNAME"
 echo "Public IP Address: $PUBLIC_IP"
 if [ -n "$PUBLIC_IPV6" ]; then
 	echo "Public IPv6 Address: $PUBLIC_IPV6"

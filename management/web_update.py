@@ -43,6 +43,8 @@ def get_web_domains(env, include_www_redirects=True, include_auto=True, exclude_
 	# as well as Z-Push for Exchange ActiveSync. This can't be removed
 	# by a custom A/AAAA record and is never a 'www.' redirect.
 	domains.add(env['PRIMARY_HOSTNAME'])
+	if env.get('WEBMAIL_HOSTNAME'):
+		domains.add(env['WEBMAIL_HOSTNAME'])
 
 	# Sort the list so the nginx conf gets written in a stable order.
 	return sort_domains(domains, env)
@@ -89,6 +91,7 @@ def do_web_update(env):
 	template2 = read_conf("nginx-primaryonly.conf")
 	template3 = "\trewrite ^(.*) https://$REDIRECT_DOMAIN$1 permanent;\n"
 	template4 = read_conf("nginx-wordpress.conf")
+	template5 = read_conf("nginx-webmail.conf")
 
 	# Add the PRIMARY_HOST configuration first so it becomes nginx's default server.
 	primary_templates = [template0, template1, template2]
@@ -102,6 +105,9 @@ def do_web_update(env):
 	for domain in get_web_domains(env):
 		if domain == env['PRIMARY_HOSTNAME']:
 			# PRIMARY_HOSTNAME is handled above.
+			continue
+		if domain == env.get('WEBMAIL_HOSTNAME'):
+			nginx_conf += make_domain_config(domain, [template0, template5], ssl_certificates, env)
 			continue
 		if domain in web_domains_not_redirect:
 			# This is a regular domain.
