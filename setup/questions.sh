@@ -187,11 +187,10 @@ if [ -z "${WEBMAIL_HOSTNAME:-}" ]; then
 	if [ -n "${DEFAULT_WEBMAIL_HOSTNAME:-}" ]; then
 		WEBMAIL_HOSTNAME=$DEFAULT_WEBMAIL_HOSTNAME
 	else
-		PRIMARY_DOMAIN=${PRIMARY_HOSTNAME#*.}
-		if [ "$PRIMARY_DOMAIN" = "$PRIMARY_HOSTNAME" ]; then
-			echo "Could not derive a webmail hostname from $PRIMARY_HOSTNAME."
-			exit 1
-		fi
+		# The documented default primary hostname is box.example.com. For
+		# installations using the apex domain directly, retain the complete
+		# hostname so aquatante.com becomes webmail.aquatante.com, not webmail.com.
+		PRIMARY_DOMAIN=${PRIMARY_HOSTNAME#box.}
 		WEBMAIL_HOSTNAME=webmail.$PRIMARY_DOMAIN
 	fi
 fi
