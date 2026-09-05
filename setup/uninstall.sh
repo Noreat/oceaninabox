@@ -25,12 +25,16 @@ function uninstall_ocean3inabox {
 		exit 1
 	fi
 
-	if [ ! -f /etc/Ocean3inaBox.conf ]; then
-		echo "ERROR: No Ocean3inaBox installation configuration was found."
-		exit 1
+	if [ -f /etc/Ocean3inaBox.conf ]; then
+		source /etc/Ocean3inaBox.conf
+	else
+		# An interrupted cleanup has already removed the configuration. The
+		# standard storage location is safe to retry and lets cleanup finish.
+		echo "Ocean3inaBox configuration is absent; resuming an interrupted cleanup."
+		STORAGE_USER=user-data
+		STORAGE_ROOT=/home/user-data
 	fi
 
-	source /etc/Ocean3inaBox.conf
 	require_safe_storage_root
 
 	echo "Stopping Ocean3inaBox services..."
@@ -80,7 +84,11 @@ function uninstall_ocean3inabox {
 	if command -v pip3 >/dev/null; then
 		for package in b2sdk boto3; do
 			if pip3 show "$package" >/dev/null 2>&1; then
-				pip3 uninstall --yes "$package"
+				if . /etc/os-release && [ "${VERSION_ID:-}" = "24.04" ]; then
+					pip3 uninstall --break-system-packages --yes "$package"
+				else
+					pip3 uninstall --yes "$package"
+				fi
 			fi
 		done
 	fi
