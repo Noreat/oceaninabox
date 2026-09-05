@@ -310,7 +310,25 @@ def get_mail_domains(env, filter_aliases=lambda alias : True, users_only=False):
 		domains.extend([get_domain(address, as_unicode=False) for address, _, _, auto in get_mail_aliases(env) if filter_aliases(address) and not auto ])
 	return set(domains)
 
-def add_mail_user(email, pw, privs, quota, env):
+def wordpress_user(action, email, password, env):
+	if env.get("INSTALL_WORDPRESS") != "1":
+		return None
+
+	wordpress_user_script = "/usr/local/lib/Ocean3inaBox/wordpress-user.php"
+	if not os.path.isfile(wordpress_user_script):
+		return "WordPress user management is unavailable. Re-run the setup to install it."
+
+	code, output = utils.shell(
+		'check_output',
+		["/usr/bin/php", wordpress_user_script, action, email],
+		capture_stderr=True,
+		trap=True,
+		input=password.encode("utf-8") if password is not None else None)
+	if code != 0:
+		return "WordPress user management failed: " + output.strip()
+	return None
+
+def add_mail_user(email, pw, privs, quota, env, wordpress_access=False):
 	# validate email
 	if email.strip() == "":
 		return ("No email address provided.", 400)
@@ -347,7 +365,7 @@ def add_mail_user(email, pw, privs, quota, env):
 	# get the database
 	conn, c = open_database(env, with_connection=True)
 
-	# hash the password
+	plain_password = pw
 	pw = hash_password(pw)
 
 	# add the user to the database
@@ -360,6 +378,13 @@ def add_mail_user(email, pw, privs, quota, env):
 	# write databasebefore next step
 	conn.commit()
 
+	if wordpress_access:
+		error = wordpress_user("create", email, plain_password, env)
+		if error:
+			c.execute("DELETE FROM users WHERE email=?", (email,))
+			conn.commit()
+			return (error, 500)
+
 	dovecot_quota_recalc(email)
 
 	# Update things in case any new domains are added.
@@ -368,6 +393,10 @@ def add_mail_user(email, pw, privs, quota, env):
 def set_mail_password(email, pw, env):
 	# validate that password is acceptable
 	validate_password(pw)
+
+	error = wordpress_user("set-password", email, pw, env)
+	if error:
+		return (error, 500)
 
 	# hash the password
 	pw = hash_password(pw)
@@ -452,6 +481,10 @@ def get_mail_password(email, env):
 	return rows[0][0]
 
 def remove_mail_user(email, env):
+	error = wordpress_user("remove", email, None, env)
+	if error:
+		return (error, 500)
+
 	# remove
 	conn, c = open_database(env, with_connection=True)
 	c.execute("DELETE FROM users WHERE email=?", (email,))

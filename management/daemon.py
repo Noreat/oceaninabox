@@ -127,6 +127,8 @@ def index():
 	return render_template('index.html',
 		hostname=env['PRIMARY_HOSTNAME'],
 		storage_root=env['STORAGE_ROOT'],
+		wordpress_enabled=env.get('INSTALL_WORDPRESS') == '1'
+			and os.path.isfile('/usr/local/lib/Ocean3inaBox/wordpress-user.php'),
 
 		no_users_exist=no_users_exist,
 		no_admins_exist=no_admins_exist,
@@ -191,7 +193,8 @@ def mail_users():
 def mail_users_add():
 	quota = request.form.get('quota', '0')
 	try:
-		return add_mail_user(request.form.get('email', ''), request.form.get('password', ''), request.form.get('privileges', ''), quota, env)
+		return add_mail_user(request.form.get('email', ''), request.form.get('password', ''), request.form.get('privileges', ''), quota, env,
+			wordpress_access=request.form.get('wordpress_access', '') == '1')
 	except ValueError as e:
 		return (str(e), 400)
 

@@ -12,6 +12,7 @@ WORDPRESS_CONFIG_DIR=$STORAGE_ROOT/wordpress
 WORDPRESS_DATABASE=wordpress
 WORDPRESS_DATABASE_USER=wordpress
 WORDPRESS_DATABASE_PASSWORD_FILE=$WORDPRESS_CONFIG_DIR/database-password
+WORDPRESS_USER_SCRIPT=/usr/local/lib/Ocean3inaBox/wordpress-user.php
 
 echo "Installing WordPress..."
 apt_install mariadb-server php"${PHP_VER}"-mysql php"${PHP_VER}"-curl php"${PHP_VER}"-gd \
@@ -80,6 +81,10 @@ require_once ABSPATH . 'wp-settings.php';
 EOF
 	chown root:www-data "$WORDPRESS_ROOT/wp-config.php"
 	chmod 640 "$WORDPRESS_ROOT/wp-config.php"
+
+	sed "s#/home/user-data/www/default#$WORDPRESS_ROOT#" conf/wordpress-user.php > "$WORDPRESS_USER_SCRIPT"
+	chown root:root "$WORDPRESS_USER_SCRIPT"
+	chmod 700 "$WORDPRESS_USER_SCRIPT"
 fi
 
 chown -R root:www-data "$WORDPRESS_ROOT"

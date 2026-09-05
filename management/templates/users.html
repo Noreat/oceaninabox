@@ -32,12 +32,18 @@
       <label class="sr-only" for="adduserQuota">Quota</label>
       <input type="text" class="form-control" id="adduserQuota" placeholder="Quota" style="width:5em;" value="0">
   </div>
+  {% if wordpress_enabled %}
+  <div class="checkbox">
+    <label><input type="checkbox" id="adduserWordPressAccess" value="1"> WordPress access</label>
+  </div>
+  {% endif %}
   <button type="submit" class="btn btn-primary">Add User</button>
 </form>
 <ul style="margin-top: 1em; padding-left: 1.5em; font-size: 90%;">
   <li>Passwords must be at least eight characters consisting of English letters and numbers only. For best results, <a href="#" onclick="return generate_random_password()">generate a random password</a>.</li>
   <li>Use <a href="#aliases">aliases</a> to create email addresses that forward to existing accounts.</li>
   <li>Administrators get access to this control panel.</li>
+  {% if wordpress_enabled %}<li>WordPress users can sign in at the WordPress login page with their email address and mail password.</li>{% endif %}
   <li>User accounts cannot contain any international (non-ASCII) characters, but <a href="#aliases">aliases</a> can.</li>
   <li>Quotas may not contain any spaces, commas or decimal points. Suffixes of G (gigabytes) and M (megabytes) are allowed.  For unlimited storage enter 0 (zero)</li>
 </ul>
@@ -120,7 +126,7 @@
 <tr>
     <td>POST</td>
     <td>/add</td>
-    <td>Adds a new mail user. Required POST-body parameters are <code>email</code> and <code>password</code>. Optional parameters: <code>privilege=admin</code> and <code>quota</code></td>
+    <td>Adds a new mail user. Required POST-body parameters are <code>email</code> and <code>password</code>. Optional parameters: <code>privilege=admin</code>, <code>quota</code>, and <code>wordpress_access=1</code>.</td>
 </tr>
 <tr>
     <td>POST</td>
@@ -226,6 +232,7 @@ function do_add_user() {
   var pw = $("#adduserPassword").val();
   var privs = $("#adduserPrivs").val();
   var quota = $("#adduserQuota").val();
+  var wordpress_access = $("#adduserWordPressAccess").is(':checked') ? '1' : '';
   api(
     "/mail/users/add",
     "POST",
@@ -233,7 +240,8 @@ function do_add_user() {
       email: email,
       password: pw,
       privileges: privs,
-      quota: quota
+      quota: quota,
+      wordpress_access: wordpress_access
     },
     function(r) {
       // Responses are multiple lines of pre-formatted text.
