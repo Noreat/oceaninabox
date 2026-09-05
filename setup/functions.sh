@@ -174,7 +174,7 @@ function install_systemd_unit {
 
 	# Older setup runs created this redundant link. A unit in /lib/systemd/system
 	# must not be linked again or systemctl refuses to enable it.
-	if [ -L "$linked_unit" ] && [ "$(readlink -f "$linked_unit")" = "$destination" ]; then
+	if [ -L "$linked_unit" ] && [ "$(readlink -f "$linked_unit")" = "$(readlink -f "$destination")" ]; then
 		rm -f "$linked_unit"
 	fi
 
