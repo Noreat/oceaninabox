@@ -8,7 +8,7 @@
 # validation by querying an Sqlite3 database of mail users.
 
 source setup/functions.sh # load our functions
-source /etc/mailinabox.conf # load global vars
+source /etc/Ocean3inaBox.conf # load global vars
 
 # ### User and Alias Database
 

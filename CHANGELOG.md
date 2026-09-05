@@ -149,9 +149,9 @@ Version 67 (December 22, 2023)
 Version 66 (December 17, 2023)
 ------------------------------
 
-* Some users reported an error installing Mail-in-a-Box related to the virtualenv command. This is hopefully fixed.
+* Some users reported an error installing Ocean3inaBox related to the virtualenv command. This is hopefully fixed.
 * Roundcube is updated to 1.6.5 fixing a security vulnerability.
-* For Mail-in-a-Box developers, a new setup variable is added to pull the source code from a different repository.
+* For Ocean3inaBox developers, a new setup variable is added to pull the source code from a different repository.
 
 Version 65 (October 27, 2023)
 -----------------------------
@@ -163,11 +163,11 @@ Version 65 (October 27, 2023)
 Version 64 (September 2, 2023)
 ------------------------------
 
-* Fixed broken installation when upgrading from Mail-in-a-Box version 56 (Nextcloud 22) and earlier because of an upstream packaging issue.
+* Fixed broken installation when upgrading from Ocean3inaBox version 56 (Nextcloud 22) and earlier because of an upstream packaging issue.
 * Fixed backups to work with the latest duplicity package which was not backwards compatible.
 * Fixed setting B2 as a backup target with a slash in the application key.
 * Turned off OpenDMARC diagnostic reports sent in response to incoming mail.
-* Fixed some crashes when using an unreleased version of Mail-in-a-Box.
+* Fixed some crashes when using an unreleased version of Ocean3inaBox.
 * Added z-push administration scripts.
 
 Version 63 (July 27, 2023)
@@ -236,13 +236,13 @@ Version 60 (October 11, 2022)
 
 This is the first release for Ubuntu 22.04.
 
-**Before upgrading**, you must **first upgrade your existing Ubuntu 18.04 box to Mail-in-a-Box v0.51 or later**, if you haven't already done so. That may not be possible after Ubuntu 18.04 reaches its end of life in April 2023, so please complete the upgrade well before then. (If you are not using Nextcloud's contacts or calendar, you can migrate to the latest version of Mail-in-a-Box from any previous version.)
+**Before upgrading**, you must **first upgrade your existing Ubuntu 18.04 box to Ocean3inaBox v0.51 or later**, if you haven't already done so. That may not be possible after Ubuntu 18.04 reaches its end of life in April 2023, so please complete the upgrade well before then. (If you are not using Nextcloud's contacts or calendar, you can migrate to the latest version of Ocean3inaBox from any previous version.)
 
 For complete upgrade instructions, see:
 
-https://discourse.mailinabox.email/t/version-60-for-ubuntu-22-04-is-about-to-be-released/9558
+https://discourse.Ocean3inaBox.email/t/version-60-for-ubuntu-22-04-is-about-to-be-released/9558
 
-No major features of Mail-in-a-Box have changed in this release, although some minor fixes were made.
+No major features of Ocean3inaBox have changed in this release, although some minor fixes were made.
 
 With the newer version of Ubuntu the following software packages we use are updated:
 
@@ -269,7 +269,7 @@ Version 57 (June 12, 2022)
 
 Setup:
 
-* Fixed issue upgrading from Mail-in-a-Box v0.40-v0.50 because of a changed URL that Nextcloud is downloaded from.
+* Fixed issue upgrading from Ocean3inaBox v0.40-v0.50 because of a changed URL that Nextcloud is downloaded from.
 
 Backups:
 
@@ -336,7 +336,7 @@ v0.54 (June 20, 2021)
 
 Mail:
 
-* Forwarded mail using mail filter rules (in Roundcube; "sieve" rules) stopped re-writing the envelope address at some point, causing forwarded mail to often be marked as spam by the final recipient. These forwards will now re-write the envelope as the Mail-in-a-Box user receiving the mail to comply with SPF/DMARC rules.
+* Forwarded mail using mail filter rules (in Roundcube; "sieve" rules) stopped re-writing the envelope address at some point, causing forwarded mail to often be marked as spam by the final recipient. These forwards will now re-write the envelope as the Ocean3inaBox user receiving the mail to comply with SPF/DMARC rules.
 * Sending mail is now possible on port 465 with the "SSL" or "TLS" option in mail clients, and this is now the recommended setting. Port 587 with STARTTLS remains available but should be avoided when configuring new mail clients.
 * Roundcube's login cookie is updated to use a new encryption algorithm (AES-256-CBC instead of DES-EDE-CBC).
 
@@ -454,7 +454,7 @@ TLS:
 
 Control panel:
 
-* The control panel API is now fully documented at https://mailinabox.email/api-docs.html.
+* The control panel API is now fully documented at https://Ocean3inaBox.email/api-docs.html.
 * User passwords can now have spaces.
 * Status checks for automatic subdomains have been moved into the section for the parent domain.
 * Typo fixed.
@@ -501,7 +501,7 @@ Software updates:
 
 System:
 
-* Nightly backups now occur on a random minute in the 3am hour (in the system time zone). The minute is chosen during Mail-in-a-Box installation/upgrade and remains the same until the next upgrade.
+* Nightly backups now occur on a random minute in the 3am hour (in the system time zone). The minute is chosen during Ocean3inaBox installation/upgrade and remains the same until the next upgrade.
 * Fix for mail log statistics report on leap days.
 * Fix Mozilla autoconfig useGlobalPreferredServer setting.
 
@@ -519,7 +519,7 @@ v0.44 (February 15, 2020)
 System:
 
 * TLS settings have been upgraded following Mozilla's recommendations for servers. TLS1.2 and 1.3 are now the only supported protocols for web, IMAP, and SMTP (submission).
-* Fixed an issue starting services when Mail-in-a-Box isn't on the root filesystem.
+* Fixed an issue starting services when Ocean3inaBox isn't on the root filesystem.
 * Changed some performance options affecting Roundcube and Nextcloud.
 
 Software updates:
@@ -552,12 +552,12 @@ v0.43 (September 1, 2019)
 
 Security fixes:
 
-* A security issue was discovered in rsync backups. If you have enabled rsync backups, the file `id_rsa_miab` may have been copied to your backup destination. This file can be used to access your backup destination. If the file was copied to your backup destination, we recommend that you delete the file on your backup destination, delete `/root/.ssh/id_rsa_miab` on your Mail-in-a-Box, then re-run Mail-in-a-Box setup, and re-configure your SSH public key at your backup destination according to the instructions in the Mail-in-a-Box control panel.
+* A security issue was discovered in rsync backups. If you have enabled rsync backups, the file `id_rsa_miab` may have been copied to your backup destination. This file can be used to access your backup destination. If the file was copied to your backup destination, we recommend that you delete the file on your backup destination, delete `/root/.ssh/id_rsa_miab` on your Ocean3inaBox, then re-run Ocean3inaBox setup, and re-configure your SSH public key at your backup destination according to the instructions in the Ocean3inaBox control panel.
 * Brute force attack prevention was missing for the managesieve service.
 
 Setup:
 
-* Nextcloud was not upgraded properly after restoring Mail-in-a-Box from a backup from v0.40 or earlier.
+* Nextcloud was not upgraded properly after restoring Ocean3inaBox from a backup from v0.40 or earlier.
 
 Mail:
 
@@ -596,7 +596,7 @@ v0.41 (February 26, 2019)
 System:
 
 * Missing brute force login attack prevention (fail2ban) filters which stopped working on Ubuntu 18.04 were added back.
-* Upgrades would fail if Mail-in-a-Box moved to a different directory in `systemctl link`.
+* Upgrades would fail if Ocean3inaBox moved to a different directory in `systemctl link`.
 
 Mail:
 
@@ -613,17 +613,17 @@ v0.40 (January 12, 2019)
 
 This is the first release for Ubuntu 18.04. This version and versions going forward can **only** be installed on Ubuntu 18.04; however, upgrades of existing Ubuntu 14.04 boxes to the latest version supporting Ubuntu 14.04 (v0.30) continue to work as normal.
 
-When **upgrading**, you **must first upgrade your existing Ubuntu 14.04 Mail-in-a-Box box** to the latest release supporting Ubuntu 14.04 --- that's v0.30 --- before you migrate to Ubuntu 18.04. If you are running an older version of Mail-in-a-Box which has an old version of ownCloud or Nextcloud, you will *not* be able to upgrade your data because older versions of ownCloud and Nextcloud that are required to perform the upgrade *cannot* be run on Ubuntu 18.04. To upgrade from Ubuntu 14.04 to Ubuntu 18.04, you **must create a fresh Ubuntu 18.04 machine** before installing this version. In-place upgrades of servers are not supported. Since Ubuntu's support for Ubuntu 14.04 has almost ended, everyone is encouraged to create a new Ubuntu 18.04 machine and migrate to it.
+When **upgrading**, you **must first upgrade your existing Ubuntu 14.04 Ocean3inaBox box** to the latest release supporting Ubuntu 14.04 --- that's v0.30 --- before you migrate to Ubuntu 18.04. If you are running an older version of Ocean3inaBox which has an old version of ownCloud or Nextcloud, you will *not* be able to upgrade your data because older versions of ownCloud and Nextcloud that are required to perform the upgrade *cannot* be run on Ubuntu 18.04. To upgrade from Ubuntu 14.04 to Ubuntu 18.04, you **must create a fresh Ubuntu 18.04 machine** before installing this version. In-place upgrades of servers are not supported. Since Ubuntu's support for Ubuntu 14.04 has almost ended, everyone is encouraged to create a new Ubuntu 18.04 machine and migrate to it.
 
 For complete upgrade instructions, see:
 
-https://discourse.mailinabox.email/t/mail-in-a-box-version-v0-40-and-moving-to-ubuntu-18-04/4289
+https://discourse.Ocean3inaBox.email/t/Ocean3inaBox-version-v0-40-and-moving-to-ubuntu-18-04/4289
 
 The changelog for this release follows.
 
 Setup:
 
-* Mail-in-a-Box now targets Ubuntu 18.04 LTS, which will have support from Ubuntu through 2022.
+* Ocean3inaBox now targets Ubuntu 18.04 LTS, which will have support from Ubuntu through 2022.
 * Some of the system packages updated in virtue of using Ubuntu 18.04 include postfix (2.11=>3.3) nsd (4.0=>4.1), nginx (1.4=>1.14), PHP (7.0=>7.2), Python (3.4=>3.6), fail2ban (0.8=>0.10), Duplicity (0.6=>0.7).
 * [Unofficial Bash Strict Mode](http://redsymbol.net/articles/unofficial-bash-strict-mode/) is turned on for setup, which might catch previously uncaught issues during setup.
 
@@ -646,14 +646,14 @@ Control Panel:
 
 * The users page now documents that passwords should only have ASCII characters to prevent character encoding mismatches between clients and the server.
 * The users page no longer shows user mailbox sizes because this was extremely slow for very large mailboxes.
-* The Mail-in-a-Box version is now shown in the system status checks even when the new-version check is disabled.
+* The Ocean3inaBox version is now shown in the system status checks even when the new-version check is disabled.
 * The alises page now warns that alises should not be used to forward mail off of the box. Mail filters within Roundcube are better for that.
 * The explanation of greylisting has been improved.
 
 v0.29 (October 25, 2018)
 ------------------------
 
-* Starting with v0.28, TLS certificate provisioning wouldn't work on new boxes until the mailinabox setup command was run a second time because of a problem with the non-interactive setup.
+* Starting with v0.28, TLS certificate provisioning wouldn't work on new boxes until the Ocean3inaBox setup command was run a second time because of a problem with the non-interactive setup.
 * Update to Nextcloud 13.0.6.
 * Update to Roundcube 1.3.7.
 * Update to Z-Push 2.4.4.
@@ -818,7 +818,7 @@ ownCloud:
 
 Control Panel/Management:
 
-* The status checks page crashed when the mailinabox.email website was down - that's fixed.
+* The status checks page crashed when the Ocean3inaBox.email website was down - that's fixed.
 * Made nightly re-provisioning of TLS certificates less noisy.
 * Fixed bugs in rsync backup method and in the list of recent backups.
 * Fixed incorrect status checks errors about IPv6 addresses.
@@ -842,7 +842,7 @@ v0.21c (February 1, 2017)
 
 Installations and upgrades started failing about 10 days ago with the error "ImportError: No module named 'packaging'" after an upstream package (Python's setuptools) was updated by its maintainers. The updated package conflicted with Ubuntu 14.04's version of another package (Python's pip). This update upgrades both packages to remove the conflict.
 
-If you already encountered the error during installation or upgrade of Mail-in-a-Box, this update may not correct the problem on your existing system. See https://discourse.mailinabox.email/t/v0-21c-release-fixes-python-package-installation-issue/1881 for help if the problem persists after upgrading to this version of Mail-in-a-Box.
+If you already encountered the error during installation or upgrade of Ocean3inaBox, this update may not correct the problem on your existing system. See https://discourse.Ocean3inaBox.email/t/v0-21c-release-fixes-python-package-installation-issue/1881 for help if the problem persists after upgrading to this version of Ocean3inaBox.
 
 v0.21b (December 4, 2016)
 -------------------------
@@ -923,7 +923,7 @@ DNS:
 System:
 
 * fail2ban jails added for SMTP submission, Roundcube, ownCloud, the control panel, and munin.
-* Mail-in-a-Box can now be installed on the i686 architecture.
+* Ocean3inaBox can now be installed on the i686 architecture.
 
 v0.18c (June 2, 2016)
 ---------------------
@@ -946,7 +946,7 @@ ownCloud:
 
 Mail:
 
-* Roundcube is updated to version 1.1.5 and the Roundcube login screen now says "[hostname] Webmail" instead of "Mail-in-a-Box/Roundcube webmail".
+* Roundcube is updated to version 1.1.5 and the Roundcube login screen now says "[hostname] Webmail" instead of "Ocean3inaBox/Roundcube webmail".
 * Fixed a long-standing issue with training the spam filter not working (because of a file permissions issue).
 
 Control panel:
@@ -974,7 +974,7 @@ This update addresses some minor security concerns and some installation issues.
 
 ownCloud:
 
-* Block web access to the configuration parameters (config.php). There is no immediate impact (see [#776](https://github.com/mail-in-a-box/mailinabox/pull/776)), although advanced users may want to take note.
+* Block web access to the configuration parameters (config.php). There is no immediate impact (see [#776](https://github.com/Ocean3inaBox/Ocean3inaBox/pull/776)), although advanced users may want to take note.
 
 Mail:
 
@@ -1071,7 +1071,7 @@ Control panel:
 * Better messages if external DNS is used and, weirdly, custom secondary nameservers are set.
 * Add POP to the mail client settings documentation.
 * The box's IP address is added to the fail2ban whitelist so that the status checks don't trigger the machine banning itself, which results in the status checks showing services down even though they are running.
-* For SSL certificates, rather than asking you what country you are in during setup, ask at the time a CSR is generated. The default system self-signed certificate now omits a country in the subject (it was never needed). The CSR_COUNTRY Mail-in-a-Box setting is dropped entirely.
+* For SSL certificates, rather than asking you what country you are in during setup, ask at the time a CSR is generated. The default system self-signed certificate now omits a country in the subject (it was never needed). The CSR_COUNTRY Ocean3inaBox setting is dropped entirely.
 
 System:
 
@@ -1111,7 +1111,7 @@ Web:
 
 Control panel:
 
-* Added an option to check for new Mail-in-a-Box versions within status checks. It is off by default so that boxes don't "phone home" without permission.
+* Added an option to check for new Ocean3inaBox versions within status checks. It is off by default so that boxes don't "phone home" without permission.
 * Added a random password generator on the users page to simplify creating new accounts.
 * When S3 backup credentials are set, the credentials are now no longer ever sent back from the box to the client, for better security.
 * Fixed the jumpiness when a modal is displayed.
@@ -1154,7 +1154,7 @@ System:
 * ownCloud updated to version 8.1.1 (with upgrade work-around), its memcached caching enabled.
 * When upgrading, network checks like blocked port 25 are now skipped.
 * Tweaks to the intrusion detection rules for IMAP.
-* Mail-in-a-Box's setup is a lot quieter, hiding lots of irrelevant messages.
+* Ocean3inaBox's setup is a lot quieter, hiding lots of irrelevant messages.
 
 Control panel:
 
@@ -1165,7 +1165,7 @@ Control panel:
 v0.12c (July 19, 2015)
 ----------------------
 
-v0.12c was posted to work around the current Sourceforge.net outage: pyzor's remote server is now hard-coded rather than accessing a file hosted on Sourceforge, and roundcube is now downloaded from a Mail-in-a-Box mirror rather than from Sourceforge.
+v0.12c was posted to work around the current Sourceforge.net outage: pyzor's remote server is now hard-coded rather than accessing a file hosted on Sourceforge, and roundcube is now downloaded from a Ocean3inaBox mirror rather than from Sourceforge.
 
 v0.12b (July 4, 2015)
 ---------------------
@@ -1196,7 +1196,7 @@ v0.11 (June 29, 2015)
 Advisories:
 * Users can no longer spoof arbitrary email addresses in outbound mail. When sending mail, the email address configured in your mail client must match the SMTP login username being used, or the email address must be an alias with the SMTP login username listed as one of the alias's targets.
 * This update replaces your DKIM signing key with a stronger key. Because of DNS caching/propagation, mail sent within a few hours after this update could be marked as spam by recipients. If you use External DNS, you will need to update your DNS records.
-* The box will now install software from a new Mail-in-a-Box PPA on Launchpad.net, where we are distributing two of our own packages: a patched postgrey and dovecot-lucene.
+* The box will now install software from a new Ocean3inaBox PPA on Launchpad.net, where we are distributing two of our own packages: a patched postgrey and dovecot-lucene.
 
 Mail:
 * Greylisting will now let some reputable senders pass through immediately.
@@ -1219,7 +1219,7 @@ Control panel:
 * Resetting a user's password now forces them to log in again everywhere.
 * Status checks were not working if an ssh server was not installed.
 * SSL certificate validation now uses the Python cryptography module in some places where openssl was used.
-* There is a new tab to show the installed version of Mail-in-a-Box and to fetch the latest released version.
+* There is a new tab to show the installed version of Ocean3inaBox and to fetch the latest released version.
 
 System:
 * The munin system monitoring tool is now installed and accessible at /admin/munin.
@@ -1273,7 +1273,7 @@ System / Control Panel:
 
 Setup:
 
-* All Mail-in-a-Box release tags are now signed on github, instructions for verifying the signature are added to the README, and the integrity of some packages downloaded during setup is now verified against a SHA1 hash stored in the tag itself.
+* All Ocean3inaBox release tags are now signed on github, instructions for verifying the signature are added to the README, and the integrity of some packages downloaded during setup is now verified against a SHA1 hash stored in the tag itself.
 * Bugs in first user account creation were fixed.
 
 v0.08 (April 1, 2015)
@@ -1439,7 +1439,7 @@ v0.03 (September 24, 2014)
 * Disabled catch-alls pending figuring out how to get users to take precedence.
 * Z-Push was not working because in v0.02 we had accidentally moved to a different version.
 * Z-Push is now locked to a specific commit so it doesn't change on us accidentally.
-* The start script is now symlinked to /usr/local/bin/mailinabox.
+* The start script is now symlinked to /usr/local/bin/Ocean3inaBox.
 
 v0.02 (September 21, 2014)
 --------------------------

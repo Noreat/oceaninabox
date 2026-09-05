@@ -1,4 +1,4 @@
-#!/usr/local/lib/mailinabox/env/bin/python
+#!/usr/local/lib/Ocean3inaBox/env/bin/python
 #
 # Checks that the upstream DNS has been set correctly and that
 # TLS certificates have been signed, etc., and if not tells the user
@@ -31,7 +31,7 @@ def get_services():
 		{ "name": "Spamassassin", "port": 10025, "public": False, },
 		{ "name": "OpenDKIM", "port": 8891, "public": False, },
 		{ "name": "OpenDMARC", "port": 8893, "public": False, },
-		{ "name": "Mail-in-a-Box Management Daemon", "port": 10222, "public": False, },
+		{ "name": "Ocean3inaBox Management Daemon", "port": 10222, "public": False, },
 		{ "name": "SSH Login (ssh)", "port": get_ssh_port(), "public": True, },
 		{ "name": "Public DNS (nsd4)", "port": 53, "public": True, },
 		{ "name": "Incoming Mail (SMTP/postfix)", "port": 25, "public": True, },
@@ -345,7 +345,7 @@ def evaluate_spamhaus_lookup(lookupaddress, lookuptype, lookupdomain, output, ze
 		output.print_warning(f"""Incorrect spamhaus query: {lookupdomain + '.zen.spamhaus.org'}. Could not determine whether
 		 	this box's {lookuptype} address is blacklisted.""")
 	elif zen == "127.255.255.254":
-		output.print_warning(f"""Mail-in-a-Box is configured to use a public DNS server. This is not supported by
+		output.print_warning(f"""Ocean3inaBox is configured to use a public DNS server. This is not supported by
 			spamhaus. Could not determine whether this box's {lookuptype} address is blacklisted.""")
 	elif zen == "127.255.255.255":
 		output.print_warning(f"""Too many queries have been performed on the spamhaus server. Could not determine
@@ -708,7 +708,7 @@ def check_dnssec(domain, env, output, dns_zonefiles, is_checking_primary=False):
 
 	output.print_line("""Follow the instructions provided by your domain name registrar to set a DS record.
 		Registrars support different sorts of DS records. Use the first option that works:""")
-	preferred_ds_order = [(7, 2), (8, 4), (13, 4), (8, 2), (13, 2)] # low to high, see https://github.com/mail-in-a-box/mailinabox/issues/1998
+	preferred_ds_order = [(7, 2), (8, 4), (13, 4), (8, 2), (13, 2)] # low to high, see https://github.com/Ocean3inaBox/Ocean3inaBox/issues/1998
 
 	def preferred_ds_order_func(ds_suggestion):
 		k = (int(ds_suggestion['alg']), int(ds_suggestion['digalg']))
@@ -814,7 +814,7 @@ def check_mail_domain(domain, env, output):
 	elif dbl == "127.255.255.252":
 		output.print_warning("Incorrect spamhaus query: {}. Could not determine whether the domain {} is blacklisted.".format(domain+'.dbl.spamhaus.org', domain))
 	elif dbl == "127.255.255.254":
-		output.print_warning(f"Mail-in-a-Box is configured to use a public DNS server. This is not supported by spamhaus. Could not determine whether the domain {domain} is blacklisted.")
+		output.print_warning(f"Ocean3inaBox is configured to use a public DNS server. This is not supported by spamhaus. Could not determine whether the domain {domain} is blacklisted.")
 	elif dbl == "127.255.255.255":
 		output.print_warning(f"Too many queries have been performed on the spamhaus server. Could not determine whether the domain {domain} is blacklisted.")
 	else:
@@ -973,19 +973,19 @@ def list_apt_updates(apt_update=True):
 	return pkgs
 
 def what_version_is_this(env):
-	# This function runs `git describe --always --abbrev=0` on the Mail-in-a-Box installation directory.
-	# Git may not be installed and Mail-in-a-Box may not have been cloned from github,
+	# This function runs `git describe --always --abbrev=0` on the Ocean3inaBox installation directory.
+	# Git may not be installed and Ocean3inaBox may not have been cloned from github,
 	# so this function may raise all sorts of exceptions.
 	miab_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 	return shell("check_output", ["/usr/bin/git", "describe", "--always", "--abbrev=0"], env={"GIT_DIR": os.path.join(miab_dir, '.git')}).strip()
 
 def get_latest_miab_version():
-	# This pings https://mailinabox.email/setup.sh and extracts the tag named in
+	# This pings https://Ocean3inaBox.email/setup.sh and extracts the tag named in
 	# the script to determine the current product version.
     from urllib.request import urlopen, HTTPError, URLError
 
     try:
-        return re.search(b'TAG=(.*)', urlopen("https://mailinabox.email/setup.sh?ping=1", timeout=5).read()).group(1).decode("utf8")
+        return re.search(b'TAG=(.*)', urlopen("https://Ocean3inaBox.email/setup.sh?ping=1", timeout=5).read()).group(1).decode("utf8")
     except (TimeoutError, HTTPError, URLError):
         return None
 
@@ -998,16 +998,16 @@ def check_miab_version(env, output):
 		this_ver = "Unknown"
 
 	if config.get("privacy", True):
-		output.print_warning(f"You are running version Mail-in-a-Box {this_ver}. Mail-in-a-Box version check disabled by privacy setting.")
+		output.print_warning(f"You are running version Ocean3inaBox {this_ver}. Ocean3inaBox version check disabled by privacy setting.")
 	else:
 		latest_ver = get_latest_miab_version()
 
 		if this_ver == latest_ver:
-			output.print_ok(f"Mail-in-a-Box is up to date. You are running version {this_ver}.")
+			output.print_ok(f"Ocean3inaBox is up to date. You are running version {this_ver}.")
 		elif latest_ver is None:
-			output.print_error(f"Latest Mail-in-a-Box version could not be determined. You are running version {this_ver}.")
+			output.print_error(f"Latest Ocean3inaBox version could not be determined. You are running version {this_ver}.")
 		else:
-			output.print_error(f"A new version of Mail-in-a-Box is available. You are running version {this_ver}. The latest version is {latest_ver}. For upgrade instructions, see https://mailinabox.email. ")
+			output.print_error(f"A new version of Ocean3inaBox is available. You are running version {this_ver}. The latest version is {latest_ver}. For upgrade instructions, see https://Ocean3inaBox.email. ")
 
 def run_and_output_changes(env, pool):
 	import json
@@ -1020,7 +1020,7 @@ def run_and_output_changes(env, pool):
 	run_checks(True, env, cur, pool)
 
 	# Load previously saved status checks.
-	cache_fn = "/var/cache/mailinabox/status_checks.json"
+	cache_fn = "/var/cache/Ocean3inaBox/status_checks.json"
 	if os.path.exists(cache_fn):
 		with open(cache_fn, encoding="utf-8") as f:
 			try:

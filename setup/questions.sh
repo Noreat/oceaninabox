@@ -18,11 +18,11 @@ if [ -z "${NONINTERACTIVE:-}" ]; then
 	# so we install the python package globally.
 	hide_output pip3 install "email_validator>=1.0.0" || exit 1
 
-	message_box "Mail-in-a-Box Installation" \
-		"Hello and thanks for deploying a Mail-in-a-Box!
+	message_box "Ocean3inaBox Installation" \
+		"Hello and thanks for deploying a Ocean3inaBox!
 		\n\nI'm going to ask you a few questions.
-		\n\nTo change your answers later, just run 'sudo mailinabox' from the command line.
-		\n\nNOTE: You should only install this on a brand new Ubuntu installation 100% dedicated to Mail-in-a-Box. Mail-in-a-Box will, for example, remove apache2."
+		\n\nTo change your answers later, just run 'sudo Ocean3inaBox' from the command line.
+		\n\nNOTE: You should only install this on a brand new Ubuntu installation 100% dedicated to Ocean3inaBox. Ocean3inaBox will, for example, remove apache2."
 fi
 
 # The box needs a name.
@@ -208,6 +208,6 @@ if [ "$PRIVATE_IPV6" != "$PUBLIC_IPV6" ]; then
 	echo "Private IPv6 Address: $PRIVATE_IPV6"
 fi
 if [ -f /usr/bin/git ] && [ -d .git ]; then
-	echo "Mail-in-a-Box Version: $(git describe --always)"
+	echo "Ocean3inaBox Version: $(git describe --always)"
 fi
 echo

@@ -1,9 +1,9 @@
-#!/usr/local/lib/mailinabox/env/bin/python
+#!/usr/local/lib/Ocean3inaBox/env/bin/python
 
 # NOTE:
 # This script is run both using the system-wide Python 3
 # interpreter (/usr/bin/python3) as well as through the
-# virtualenv (/usr/local/lib/mailinabox/env). So only
+# virtualenv (/usr/local/lib/Ocean3inaBox/env). So only
 # import packages at the top level of this script that
 # are installed in *both* contexts. We use the system-wide
 # Python 3 in setup/questions.sh to validate the email

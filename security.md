@@ -1,9 +1,9 @@
-Mail-in-a-Box Security Guide
+Ocean3inaBox Security Guide
 ============================
 
-Mail-in-a-Box turns a fresh Ubuntu 22.04 LTS 64-bit machine into a mail server appliance by installing and configuring various components.
+Ocean3inaBox turns a fresh Ubuntu 22.04 LTS 64-bit machine into a mail server appliance by installing and configuring various components.
 
-This page documents the security posture of Mail-in-a-Box. The term “box” is used below to mean a configured Mail-in-a-Box.
+This page documents the security posture of Ocean3inaBox. The term “box” is used below to mean a configured Ocean3inaBox.
 
 Reporting Security Vulnerabilities
 ----------------------------------
@@ -15,7 +15,7 @@ Threat Model
 
 Nothing is perfectly secure, and an adversary with sufficient resources can always penetrate a system.
 
-The primary goal of Mail-in-a-Box is to make deploying a good mail server easy, so we balance ― as everyone does ― privacy and security concerns with the practicality of actually deploying the system. That means we make certain assumptions about adversaries. We assume that adversaries . . .
+The primary goal of Ocean3inaBox is to make deploying a good mail server easy, so we balance ― as everyone does ― privacy and security concerns with the practicality of actually deploying the system. That means we make certain assumptions about adversaries. We assume that adversaries . . .
 
 * Do not have physical access to the box (i.e., we do not aim to protect the box from physical access).
 * Have not been given Unix accounts on the box (i.e., we assume all users with shell access are trusted).
@@ -43,7 +43,7 @@ These services are protected by [TLS](https://en.wikipedia.org/wiki/Transport_La
 
 The services all follow these rules:
 
-* TLS certificates are generated with 2048-bit RSA keys and SHA-256 fingerprints. The box provides a self-signed certificate by default. The [setup guide](https://mailinabox.email/guide.html) explains how to verify the certificate fingerprint on first login. Users are encouraged to replace the certificate with a proper CA-signed one. ([source](setup/ssl.sh))
+* TLS certificates are generated with 2048-bit RSA keys and SHA-256 fingerprints. The box provides a self-signed certificate by default. The [setup guide](https://Ocean3inaBox.email/guide.html) explains how to verify the certificate fingerprint on first login. Users are encouraged to replace the certificate with a proper CA-signed one. ([source](setup/ssl.sh))
 * Only TLSv1.2+ are offered (the older SSL protocols are not offered).
 * We track the [Mozilla Intermediate Ciphers Recommendation](https://wiki.mozilla.org/Security/Server_Side_TLS), balancing security with supporting a wide range of mail clients. Diffie-Hellman ciphers use a 2048-bit key for forward secrecy. For more details, see the [output of SSLyze for these ports](tests/tls_results.txt).
 
@@ -58,9 +58,9 @@ The passwords for mail users are stored on disk using the [SHA512-CRYPT](http://
 
 ### Console access
 
-Console access (e.g. via SSH) is configured by the system image used to create the box, typically from by a cloud virtual machine provider (e.g. Digital Ocean). Mail-in-a-Box does not set any console access settings, although it will warn the administrator in the System Status Checks if password-based login is turned on.
+Console access (e.g. via SSH) is configured by the system image used to create the box, typically from by a cloud virtual machine provider (e.g. Digital Ocean). Ocean3inaBox does not set any console access settings, although it will warn the administrator in the System Status Checks if password-based login is turned on.
 
-The [setup guide video](https://mailinabox.email/) explains how to verify the host key fingerprint on first login.
+The [setup guide video](https://Ocean3inaBox.email/) explains how to verify the host key fingerprint on first login.
 
 If DNSSEC is enabled at the box's domain name's registrar, the SSHFP record that the box automatically puts into DNS can also be used to verify the host key fingerprint by setting `VerifyHostKeyDNS yes` in your `ssh/.config` file or by logging in with `ssh -o VerifyHostKeyDNS=yes`. ([source](management/dns_update.py))
 
@@ -68,7 +68,7 @@ If DNSSEC is enabled at the box's domain name's registrar, the SSHFP record that
 
 `fail2ban` provides some protection from brute-force login attacks (repeated logins that guess account passwords) by blocking offending IP addresses at the network level.
 
-The following services are protected: SSH, IMAP (dovecot), SMTP submission (postfix), webmail (roundcube), Nextcloud/CalDAV/CardDAV (over HTTP), and the Mail-in-a-Box control panel (over HTTP).
+The following services are protected: SSH, IMAP (dovecot), SMTP submission (postfix), webmail (roundcube), Nextcloud/CalDAV/CardDAV (over HTTP), and the Ocean3inaBox control panel (over HTTP).
 
 Some other services running on the box may be missing fail2ban filters.
 

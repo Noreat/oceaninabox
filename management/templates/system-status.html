@@ -46,7 +46,7 @@
 
 <div id="system-privacy-setting" style="display: none">
 	<div><a onclick="return enable_privacy(!current_privacy_setting)" href="#"><span>Enable/Disable</span> New-Version Check</a></div>
-	<p style="line-height: 125%"><small>(When enabled, status checks phone-home to check for a new release of Mail-in-a-Box.)</small></p>
+	<p style="line-height: 125%"><small>(When enabled, status checks phone-home to check for a new release of Ocean3inaBox.)</small></p>
 </div>
 
 	</div> <!-- /col -->
@@ -167,7 +167,7 @@ function enable_privacy(status) {
 function confirm_reboot() {
   show_modal_confirm(
     "Reboot",
-    $("<p>This will reboot your Mail-in-a-Box <code>{{hostname}}</code>.</p> <p>Until the machine is fully restarted, your users will not be able to send and receive email, and you will not be able to connect to this control panel or with SSH. The reboot cannot be cancelled.</p>"),
+    $("<p>This will reboot your Ocean3inaBox <code>{{hostname}}</code>.</p> <p>Until the machine is fully restarted, your users will not be able to send and receive email, and you will not be able to connect to this control panel or with SSH. The reboot cannot be cancelled.</p>"),
     "Reboot Now",
     function() {
       api(

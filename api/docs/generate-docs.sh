@@ -4,11 +4,11 @@
 # - Node.js
 # - redoc-cli (`npm install redoc-cli -g`)
 
-redoc-cli bundle ../mailinabox.yml \
+redoc-cli bundle ../Ocean3inaBox.yml \
   -t template.hbs \
   -o api-docs.html \
-  --templateOptions.metaDescription="Mail-in-a-Box HTTP API" \
-  --title="Mail-in-a-Box HTTP API" \
+  --templateOptions.metaDescription="Ocean3inaBox HTTP API" \
+  --title="Ocean3inaBox HTTP API" \
   --options.expandSingleSchemaField \
   --options.hideSingleRequestSampleTab \
   --options.jsonSampleExpandLevel=10 \

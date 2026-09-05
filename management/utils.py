@@ -4,11 +4,11 @@ import os.path
 # migrate.py which runs on fresh machines before anything is installed
 # besides Python.
 
-# THE ENVIRONMENT FILE AT /etc/mailinabox.conf
+# THE ENVIRONMENT FILE AT /etc/Ocean3inaBox.conf
 
 def load_environment():
-    # Load settings from /etc/mailinabox.conf.
-    return load_env_vars_from_file("/etc/mailinabox.conf")
+    # Load settings from /etc/Ocean3inaBox.conf.
+    return load_env_vars_from_file("/etc/Ocean3inaBox.conf")
 
 def load_env_vars_from_file(fn):
     # Load settings from a KEY=VALUE file.
@@ -20,7 +20,7 @@ def load_env_vars_from_file(fn):
     return env
 
 def save_environment(env):
-    with open("/etc/mailinabox.conf", "w", encoding="utf-8") as f:
+    with open("/etc/Ocean3inaBox.conf", "w", encoding="utf-8") as f:
         f.writelines(f"{k}={v}\n" for k, v in env.items())
 
 # THE SETTINGS FILE AT STORAGE_ROOT/settings.yaml.

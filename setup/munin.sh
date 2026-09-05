@@ -3,7 +3,7 @@
 #################################################
 
 source setup/functions.sh # load our functions
-source /etc/mailinabox.conf # load global vars
+source /etc/Ocean3inaBox.conf # load global vars
 
 # install Munin
 echo "Installing Munin (system monitoring)..."
@@ -62,8 +62,8 @@ done
 mkdir -p /var/lib/munin-node/plugin-state/
 
 # Create a systemd service for munin.
-ln -sf "$PWD/management/munin_start.sh" /usr/local/lib/mailinabox/munin_start.sh
-chmod 0744 /usr/local/lib/mailinabox/munin_start.sh
+ln -sf "$PWD/management/munin_start.sh" /usr/local/lib/Ocean3inaBox/munin_start.sh
+chmod 0744 /usr/local/lib/Ocean3inaBox/munin_start.sh
 cp --remove-destination conf/munin.service /lib/systemd/system/munin.service # target was previously a symlink so remove first
 hide_output systemctl link -f /lib/systemd/system/munin.service
 hide_output systemctl daemon-reload

@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 #
 # This is a command-line script for calling management APIs
-# on the Mail-in-a-Box control panel backend. The script
-# reads /var/lib/mailinabox/api.key for the backend's
+# on the Ocean3inaBox control panel backend. The script
+# reads /var/lib/Ocean3inaBox/api.key for the backend's
 # root API key. This file is readable only by root, so this
 # tool can only be used as root.
 
@@ -22,7 +22,7 @@ def mgmt(cmd, data=None, is_json=False):
 		if e.code == 401:
 			with contextlib.suppress(Exception):
 				print(e.read().decode("utf8"))
-			print("The management daemon refused access. The API key file may be out of sync. Try 'service mailinabox restart'.", file=sys.stderr)
+			print("The management daemon refused access. The API key file may be out of sync. Try 'service Ocean3inaBox restart'.", file=sys.stderr)
 		elif hasattr(e, 'read'):
 			print(e.read().decode('utf8'), file=sys.stderr)
 		else:
@@ -46,12 +46,12 @@ def read_password():
     return first
 
 def setup_key_auth(mgmt_uri):
-	with open('/var/lib/mailinabox/api.key', encoding='utf-8') as f:
+	with open('/var/lib/Ocean3inaBox/api.key', encoding='utf-8') as f:
 		key = f.read().strip()
 
 	auth_handler = urllib.request.HTTPBasicAuthHandler()
 	auth_handler.add_password(
-		realm='Mail-in-a-Box Management Server',
+		realm='Ocean3inaBox Management Server',
 		uri=mgmt_uri,
 		user=key,
 		passwd='')

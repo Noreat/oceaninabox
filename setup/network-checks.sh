@@ -33,7 +33,7 @@ if host "$REVERSED_IPV4.zen.spamhaus.org" > /dev/null; then
 	echo "cannot continue."
 	echo
 	echo "Associate a different IP address with this machine if possible."
-	echo "Many residential network IP addresses are listed, so Mail-in-a-Box"
+	echo "Many residential network IP addresses are listed, so Ocean3inaBox"
 	echo "typically cannot be used on a residential Internet connection."
 	echo
 	exit 1

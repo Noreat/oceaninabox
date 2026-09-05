@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 #
-# Tests the DNS configuration of a Mail-in-a-Box.
+# Tests the DNS configuration of a Ocean3inaBox.
 #
 # tests/dns.py ipaddr hostname
 #
-# where ipaddr is the IP address of your Mail-in-a-Box
+# where ipaddr is the IP address of your Ocean3inaBox
 # and hostname is the domain name to check the DNS for.
 
 import sys, re
@@ -77,19 +77,19 @@ def test2(tests, server, description):
 	return first # success
 
 # Test the response from the machine itself.
-if not test(ipaddr, "Mail-in-a-Box"):
+if not test(ipaddr, "Ocean3inaBox"):
 	print ()
-	print (f"Please run the Mail-in-a-Box setup script on {hostname} again.")
+	print (f"Please run the Ocean3inaBox setup script on {hostname} again.")
 	sys.exit(1)
 else:
-	print ("The Mail-in-a-Box provided correct DNS answers.")
+	print ("The Ocean3inaBox provided correct DNS answers.")
 	print ()
 
 	# If those settings are OK, also test Google's Public DNS
 	# to see if the machine is hooked up to recursive DNS properly.
 	if not test("8.8.8.8", "Google Public DNS"):
 		print ()
-		print (f"Check that the nameserver settings for {hostname} are correct at your domain registrar. It may take a few hours for Google Public DNS to update after changes on your Mail-in-a-Box.")
+		print (f"Check that the nameserver settings for {hostname} are correct at your domain registrar. It may take a few hours for Google Public DNS to update after changes on your Ocean3inaBox.")
 		sys.exit(1)
 	else:
 		print ("Your domain registrar or DNS host appears to be configured correctly as well. Public DNS provides the same answers.")

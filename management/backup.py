@@ -1,4 +1,4 @@
-#!/usr/local/lib/mailinabox/env/bin/python
+#!/usr/local/lib/Ocean3inaBox/env/bin/python
 
 # This script performs a backup of all user data:
 # 1) System services are stopped.
@@ -496,7 +496,7 @@ def list_target_files(config):
 		else:
 			reason = ("Unknown error."
 					"Please check running 'management/backup.py --verify'"
-					"from mailinabox sources to debug the issue.")
+					"from Ocean3inaBox sources to debug the issue.")
 		msg = f"Connection to rsync host failed: {reason}"
 		raise ValueError(msg)
 

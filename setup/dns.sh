@@ -8,7 +8,7 @@
 # mail users & aliases created by the user later.
 
 source setup/functions.sh # load our functions
-source /etc/mailinabox.conf # load global vars
+source /etc/Ocean3inaBox.conf # load global vars
 
 # Prepare nsd's configuration.
 # We configure nsd before installation as we only want it to bind to some addresses
@@ -19,7 +19,7 @@ mkdir -p /etc/nsd/zones
 touch /etc/nsd/zones.conf
 
 cat > /etc/nsd/nsd.conf << EOF;
-# Do not edit. Overwritten by Mail-in-a-Box setup.
+# Do not edit. Overwritten by Ocean3inaBox setup.
 server:
   hide-version: yes
   logfile: "/var/log/nsd.log"
@@ -138,13 +138,13 @@ done
 # Force the dns_update script to be run every day to re-sign zones for DNSSEC
 # before they expire. When we sign zones (in `dns_update.py`) we specify a
 # 30-day validation window, so we had better re-sign before then.
-cat > /etc/cron.daily/mailinabox-dnssec << EOF;
+cat > /etc/cron.daily/Ocean3inaBox-dnssec << EOF;
 #!/bin/bash
-# Mail-in-a-Box
+# Ocean3inaBox
 # Re-sign any DNS zones with DNSSEC because the signatures expire periodically.
 $PWD/tools/dns_update
 EOF
-chmod +x /etc/cron.daily/mailinabox-dnssec
+chmod +x /etc/cron.daily/Ocean3inaBox-dnssec
 
 # Permit DNS queries on TCP/UDP in the firewall.
 

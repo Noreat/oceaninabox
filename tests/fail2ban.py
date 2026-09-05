@@ -129,7 +129,7 @@ def http_test(url, expected_status, postdata=None, qsargs=None, auth=None):
 			url,
 			auth=HTTPBasicAuth(*auth) if auth else None,
 			data=postdata,
-			headers={'User-Agent': 'Mail-in-a-Box fail2ban tester'},
+			headers={'User-Agent': 'Ocean3inaBox fail2ban tester'},
 			timeout=8,
 			verify=False) # don't bother with HTTPS validation, it may not be configured yet
 	except requests.exceptions.ConnectTimeout:
@@ -234,10 +234,10 @@ if __name__ == "__main__":
 	# Managesieve
 	run_test(managesieve_test, [], 20, 30, 4)
 
-	# Mail-in-a-Box control panel
+	# Ocean3inaBox control panel
 	run_test(http_test, ["/admin/login", 200], 20, 30, 1)
 
-	# Munin via the Mail-in-a-Box control panel
+	# Munin via the Ocean3inaBox control panel
 	run_test(http_test, ["/admin/munin/", 401], 20, 30, 1)
 
 	# ownCloud

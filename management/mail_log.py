@@ -1,4 +1,4 @@
-#!/usr/local/lib/mailinabox/env/bin/python
+#!/usr/local/lib/Ocean3inaBox/env/bin/python
 import argparse
 import datetime
 import gzip
@@ -793,8 +793,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Scan the mail log files for interesting data. By default, this script "
                     "shows today's incoming and outgoing mail statistics. This script was ("
-                    "re)written for the Mail-in-a-box email server."
-                    "https://github.com/mail-in-a-box/mailinabox",
+                    "re)written for the Ocean3inaBox email server."
+                    "https://github.com/Ocean3inaBox/Ocean3inaBox",
         add_help=False
     )
 

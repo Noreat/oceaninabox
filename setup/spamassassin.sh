@@ -9,7 +9,7 @@
 # In order to move spam automatically into the Spam folder we use the dovecot sieve
 # plugin.
 
-source /etc/mailinabox.conf # get global vars
+source /etc/Ocean3inaBox.conf # get global vars
 source setup/functions.sh # load our functions
 
 # Install packages and basic configuration

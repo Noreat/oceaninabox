@@ -107,7 +107,7 @@ function get_default_privateip {
 	# interface specification in order to use them with bind().
 	# In these cases, we append "%interface" to the address.
 	# See the Notes section in the man page for getaddrinfo and
-	# https://discourse.mailinabox.email/t/update-broke-mailinabox/34/9.
+	# https://discourse.Ocean3inaBox.email/t/update-broke-Ocean3inaBox/34/9.
 	#
 	# Also see ae67409603c49b7fa73c227449264ddd10aae6a9 and
 	# issue #3 for why/how we originally added IPv6.

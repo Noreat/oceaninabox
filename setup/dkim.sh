@@ -7,7 +7,7 @@
 # The DNS configuration for DKIM is done in the management daemon.
 
 source setup/functions.sh # load our functions
-source /etc/mailinabox.conf # load global vars
+source /etc/Ocean3inaBox.conf # load global vars
 
 # Install DKIM...
 echo "Installing OpenDKIM/OpenDMARC..."

@@ -133,13 +133,13 @@ def sslyze(opts, port, ok_ciphers):
 
 # Get a list of OpenSSL cipher names.
 cipher_names = { }
-for cipher in csv.DictReader(io.StringIO(urllib.request.urlopen("https://raw.githubusercontent.com/mail-in-a-box/user-agent-tls-capabilities/master/cipher_names.csv").read().decode("utf8"))):
+for cipher in csv.DictReader(io.StringIO(urllib.request.urlopen("https://raw.githubusercontent.com/Ocean3inaBox/user-agent-tls-capabilities/master/cipher_names.csv").read().decode("utf8"))):
 	# not sure why there are some multi-line values, use first line:
 	cipher["OpenSSL"] = cipher["OpenSSL"].split("\n")[0]
 	cipher_names[cipher["IANA"]] = cipher["OpenSSL"]
 
 # Get a list of what clients support what ciphers, using OpenSSL cipher names.
-client_compatibility = json.loads(urllib.request.urlopen("https://raw.githubusercontent.com/mail-in-a-box/user-agent-tls-capabilities/master/clients.json").read().decode("utf8"))
+client_compatibility = json.loads(urllib.request.urlopen("https://raw.githubusercontent.com/Ocean3inaBox/user-agent-tls-capabilities/master/clients.json").read().decode("utf8"))
 cipher_clients = { }
 for client in client_compatibility:
 	if len(set(client['protocols']) & {"TLS 1.0", "TLS 1.1", "TLS 1.2"}) == 0: continue # does not support TLS

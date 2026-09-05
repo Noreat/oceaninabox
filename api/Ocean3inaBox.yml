@@ -1,27 +1,27 @@
 openapi: 3.0.3
 info:
-  title: Mail-in-a-Box
+  title: Ocean3inaBox
   description: |
-    Mail-in-a-Box API HTTP specification.
+    Ocean3inaBox API HTTP specification.
 
     # Introduction
     This API is documented in [**OpenAPI format**](http://spec.openapis.org/oas/v3.0.3).
-    ([View the full HTTP specification](https://raw.githubusercontent.com/mail-in-a-box/mailinabox/api-spec/api/mailinabox.yml).)
+    ([View the full HTTP specification](https://raw.githubusercontent.com/Ocean3inaBox/Ocean3inaBox/api-spec/api/Ocean3inaBox.yml).)
 
     All endpoints are relative to `https://{host}/admin` and are secured with [`Basic Access` authentication](https://en.wikipedia.org/wiki/Basic_access_authentication). If you have multi-factor authentication enabled, authentication with a `user:password` combination will fail unless a valid OTP is supplied via the `x-auth-token` header. Authentication via a `user:user_key` pair is possible without the header being present.
   contact:
-    name: Mail-in-a-Box support
-    url: https://mailinabox.email/
+    name: Ocean3inaBox support
+    url: https://Ocean3inaBox.email/
   license:
     name: CC0 1.0 Universal
     url: https://creativecommons.org/publicdomain/zero/1.0/legalcode
   version: 0.51.0
   x-logo:
-    url: https://mailinabox.email/static/logo.png
-    altText: Mail-in-a-Box logo
+    url: https://Ocean3inaBox.email/static/logo.png
+    altText: Ocean3inaBox logo
 externalDocs:
-  description: Find out more about Mail-in-a-box.
-  url: https://mailinabox.email/
+  description: Find out more about Ocean3inaBox.
+  url: https://Ocean3inaBox.email/
 servers:
   - url: https://{host}/admin
     variables:
@@ -152,7 +152,7 @@ paths:
       tags:
         - System
       summary: Get system version
-      description: Returns installed Mail-in-a-Box version.
+      description: Returns installed Ocean3inaBox version.
       operationId: getSystemVersion
       x-codeSamples:
         - lang: curl
@@ -178,7 +178,7 @@ paths:
       tags:
         - System
       summary: Get system upstream version
-      description: Returns Mail-in-a-Box upstream version.
+      description: Returns Ocean3inaBox upstream version.
       operationId: getSystemUpstreamVersion
       x-codeSamples:
         - lang: curl
@@ -2134,7 +2134,7 @@ components:
           minimum: 0
           maximum: 1
           example: 1
-          description: Force an update even if mailinabox detects no changes are required.
+          description: Force an update even if Ocean3inaBox detects no changes are required.
       description: DNS update request.
     DNSUpdateResponse:
       type: string

@@ -1,4 +1,4 @@
-#!/usr/local/lib/mailinabox/env/bin/python
+#!/usr/local/lib/Ocean3inaBox/env/bin/python
 
 # Creates DNS zone files for all of the domains of all of the mail users
 # and mail aliases and restarts nsd.
@@ -337,7 +337,7 @@ def build_zone(domain, domain_properties, additional_records, env, is_zone=True)
 		# instead of '+' and '/' which are not allowed in an MTA-STS policy id) but then just take its
 		# first 20 characters, which is more than sufficient to change whenever the policy file changes
 		# (and ensures any '=' padding at the end of the base64 encoding is dropped).
-		with open("/var/lib/mailinabox/mta-sts.txt", "rb") as f:
+		with open("/var/lib/Ocean3inaBox/mta-sts.txt", "rb") as f:
 			mta_sts_policy_id = base64.b64encode(hashlib.sha1(f.read()).digest(), altchars=b"AA").decode("ascii")[0:20]
 		mta_sts_records.extend([
 			("_mta-sts", "TXT", "v=STSv1; id=" + mta_sts_policy_id, "Optional. Part of the MTA-STS policy for incoming mail. If set, a MTA-STS policy must also be published.")
@@ -390,7 +390,7 @@ def build_tlsa_record(env):
 	# Thanks to http://blog.huque.com/2012/10/dnssec-and-certificates.html
 	# and https://community.letsencrypt.org/t/please-avoid-3-0-1-and-3-0-2-dane-tlsa-records-with-le-certificates/7022
 	# for explaining all of this! Also see https://tools.ietf.org/html/rfc6698#section-2.1
-	# and https://github.com/mail-in-a-box/mailinabox/issues/268#issuecomment-167160243.
+	# and https://github.com/Ocean3inaBox/Ocean3inaBox/issues/268#issuecomment-167160243.
 	#
 	# There are several criteria. We used to use "3 0 1" criteria, which
 	# meant to pin a leaf (3) certificate (0) with SHA256 hash (1). But
@@ -399,7 +399,7 @@ def build_tlsa_record(env):
 	# a leaf certificate (3)'s subject public key (1) with SHA256 hash (1).
 	# The subject public key is the public key portion of the private key
 	# that generated the CSR that generated the certificate. Since we
-	# generate a private key once the first time Mail-in-a-Box is set up
+	# generate a private key once the first time Ocean3inaBox is set up
 	# and reuse it for all subsequent certificates, the TLSA record will
 	# remain valid indefinitely.
 

@@ -1,4 +1,4 @@
-#!/usr/local/lib/mailinabox/env/bin/python
+#!/usr/local/lib/Ocean3inaBox/env/bin/python
 
 # Reads in STDIN. If the stream is not empty, mail it to the system administrator.
 

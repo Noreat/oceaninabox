@@ -31,13 +31,13 @@
   {% if no_users_exist %}
   <p class="text-danger">There are no users on this system! To make an administrative user,
   log into this machine using SSH (like when you first set it up) and run:</p>
-  <pre>cd mailinabox
+  <pre>cd Ocean3inaBox
 sudo management/cli.py user add me@{{hostname}}
 sudo management/cli.py user make-admin me@{{hostname}}</pre>
   {% else %}
   <p class="text-danger">There are no administrative users on this system! To make an administrative user,
   log into this machine using SSH (like when you first set it up) and run:</p>
-  <pre>cd mailinabox
+  <pre>cd Ocean3inaBox
 sudo management/cli.py user make-admin me@{{hostname}}</pre>
   {% endif %}
   <hr>
@@ -45,7 +45,7 @@ sudo management/cli.py user make-admin me@{{hostname}}</pre>
 </div>
 {% endif %}
 
-<p class="subtitle">Log in here for your Mail-in-a-Box control panel.</p>
+<p class="subtitle">Log in here for your Ocean3inaBox control panel.</p>
 
 <div class="login">
   <form id="loginForm" class="form-horizontal" role="form" onsubmit="do_login(); return false;" method="get">

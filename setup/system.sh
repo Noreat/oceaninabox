@@ -1,5 +1,5 @@
 #!/bin/bash
-source /etc/mailinabox.conf
+source /etc/Ocean3inaBox.conf
 source setup/functions.sh # load our functions
 
 # Basic System Configuration
@@ -80,7 +80,7 @@ fi
 
 # Set the systemd journal log retention from infinite to 10 days,
 # since over time the logs take up a large amount of space.
-# (See https://discourse.mailinabox.email/t/journalctl-reclaim-space-on-small-mailinabox/6728/11.)
+# (See https://discourse.Ocean3inaBox.email/t/journalctl-reclaim-space-on-small-Ocean3inaBox/6728/11.)
 tools/editconf.py /etc/systemd/journald.conf MaxRetentionSec=10day
 
 # ### Improve server privacy
@@ -125,7 +125,7 @@ echo "Updating system packages..."
 hide_output apt-get update --allow-releaseinfo-change
 apt_get_quiet upgrade
 
-# Old kernels pile up over time and take up a lot of disk space, and because of Mail-in-a-Box
+# Old kernels pile up over time and take up a lot of disk space, and because of Ocean3inaBox
 # changes there may be other packages that are no longer needed. Clear out anything apt knows
 # is safe to delete.
 
@@ -177,7 +177,7 @@ fi
 if [ -z "${NONINTERACTIVE:-}" ]; then
 	if [ ! -f /etc/timezone ] || [ -n "${FIRST_TIME_SETUP:-}" ]; then
 		# If the file is missing or this is the user's first time running
-		# Mail-in-a-Box setup, run the interactive timezone configuration
+		# Ocean3inaBox setup, run the interactive timezone configuration
 		# tool.
 		dpkg-reconfigure tzdata
 		restart_service rsyslog
@@ -375,7 +375,7 @@ cat conf/fail2ban/jails.conf \
     | sed "s/PUBLIC_IPV6/$PUBLIC_IPV6/g" \
 	| sed "s/PUBLIC_IP/$PUBLIC_IP/g" \
 	| sed "s#STORAGE_ROOT#$STORAGE_ROOT#" \
-	> /etc/fail2ban/jail.d/mailinabox.conf
+	> /etc/fail2ban/jail.d/Ocean3inaBox.conf
 cp -f conf/fail2ban/filter.d/* /etc/fail2ban/filter.d/
 
 # On first installation, the log files that the jails look at don't all exist.

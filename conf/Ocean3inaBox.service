@@ -1,11 +1,11 @@
 [Unit]
-Description=Mail-in-a-Box System Management Service
+Description=Ocean3inaBox System Management Service
 After=multi-user.target
 
 [Service]
 Type=idle
 IgnoreSIGPIPE=False
-ExecStart=/usr/local/lib/mailinabox/start
+ExecStart=/usr/local/lib/Ocean3inaBox/start
 
 [Install]
 WantedBy=multi-user.target

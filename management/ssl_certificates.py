@@ -1,4 +1,4 @@
-#!/usr/local/lib/mailinabox/env/bin/python
+#!/usr/local/lib/Ocean3inaBox/env/bin/python
 # Utilities for installing and selecting SSL certificates.
 
 import os, os.path, re, shutil, subprocess, tempfile
@@ -340,7 +340,7 @@ def provision_certificates(env, limit_domains):
 						"certbot",
 						"certonly",
 						#"-v", # just enough to see ACME errors
-						"--non-interactive", # will fail if user hasn't registered during Mail-in-a-Box setup
+						"--non-interactive", # will fail if user hasn't registered during Ocean3inaBox setup
 
 						"-d", ",".join(domain_list), # first will be main domain
 

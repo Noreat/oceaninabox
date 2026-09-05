@@ -3,7 +3,7 @@
 #################################################
 
 source setup/functions.sh # load our functions
-source /etc/mailinabox.conf # load global vars
+source /etc/Ocean3inaBox.conf # load global vars
 
 # Some Ubuntu images start off with Apache. Remove it since we
 # will use nginx. Use autoremove to remove any Apache dependencies.
@@ -100,17 +100,17 @@ fi
 # until mail accounts have been created.
 
 # Create the iOS/OS X Mobile Configuration file which is exposed via the
-# nginx configuration at /mailinabox-mobileconfig.
-mkdir -p /var/lib/mailinabox
-chmod a+rx /var/lib/mailinabox
+# nginx configuration at /Ocean3inaBox-mobileconfig.
+mkdir -p /var/lib/Ocean3inaBox
+chmod a+rx /var/lib/Ocean3inaBox
 cat conf/ios-profile.xml \
 	| sed "s/PRIMARY_HOSTNAME/$PRIMARY_HOSTNAME/" \
 	| sed "s/UUID1/$(cat /proc/sys/kernel/random/uuid)/" \
 	| sed "s/UUID2/$(cat /proc/sys/kernel/random/uuid)/" \
 	| sed "s/UUID3/$(cat /proc/sys/kernel/random/uuid)/" \
 	| sed "s/UUID4/$(cat /proc/sys/kernel/random/uuid)/" \
-	 > /var/lib/mailinabox/mobileconfig.xml
-chmod a+r /var/lib/mailinabox/mobileconfig.xml
+	 > /var/lib/Ocean3inaBox/mobileconfig.xml
+chmod a+r /var/lib/Ocean3inaBox/mobileconfig.xml
 
 # Create the Mozilla Auto-configuration file which is exposed via the
 # nginx configuration at /.well-known/autoconfig/mail/config-v1.1.xml.
@@ -119,14 +119,14 @@ chmod a+r /var/lib/mailinabox/mobileconfig.xml
 # and https://developer.mozilla.org/en-US/docs/Mozilla/Thunderbird/Autoconfiguration/FileFormat/HowTo.
 cat conf/mozilla-autoconfig.xml \
 	| sed "s/PRIMARY_HOSTNAME/$PRIMARY_HOSTNAME/" \
-	 > /var/lib/mailinabox/mozilla-autoconfig.xml
-chmod a+r /var/lib/mailinabox/mozilla-autoconfig.xml
+	 > /var/lib/Ocean3inaBox/mozilla-autoconfig.xml
+chmod a+r /var/lib/Ocean3inaBox/mozilla-autoconfig.xml
 
 # Create a generic mta-sts.txt file which is exposed via the
 # nginx configuration at /.well-known/mta-sts.txt
 # more documentation is available on:
 # https://www.uriports.com/blog/mta-sts-explained/
-# default mode is "enforce". In /etc/mailinabox.conf change
+# default mode is "enforce". In /etc/Ocean3inaBox.conf change
 # "MTA_STS_MODE=testing" which means "Messages will be delivered
 # as though there was no failure but a report will be sent if
 # TLS-RPT is configured" if you are not sure you want this yet. Or "none".
@@ -134,8 +134,8 @@ PUNY_PRIMARY_HOSTNAME=$(echo "$PRIMARY_HOSTNAME" | idn2)
 cat conf/mta-sts.txt \
         | sed "s/MODE/${MTA_STS_MODE}/" \
         | sed "s/PRIMARY_HOSTNAME/$PUNY_PRIMARY_HOSTNAME/" \
-         > /var/lib/mailinabox/mta-sts.txt
-chmod a+r /var/lib/mailinabox/mta-sts.txt
+         > /var/lib/Ocean3inaBox/mta-sts.txt
+chmod a+r /var/lib/Ocean3inaBox/mta-sts.txt
 
 # make a default homepage
 if [ -d "$STORAGE_ROOT/www/static" ]; then mv "$STORAGE_ROOT/www/static" "$STORAGE_ROOT/www/default"; fi # migration #NODOC

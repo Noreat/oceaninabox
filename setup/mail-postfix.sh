@@ -28,7 +28,7 @@
 # configuration.
 
 source setup/functions.sh # load our functions
-source /etc/mailinabox.conf # load global vars
+source /etc/Ocean3inaBox.conf # load global vars
 
 # ### Install packages.
 
@@ -58,7 +58,7 @@ tools/editconf.py /etc/postfix/main.cf \
 	smtp_bind_address="$PRIVATE_IP" \
 	smtp_bind_address6="$PRIVATE_IPV6" \
 	myhostname="$PRIMARY_HOSTNAME"\
-	smtpd_banner="\$myhostname ESMTP Hi, I'm a Mail-in-a-Box (Ubuntu/Postfix; see https://mailinabox.email/)" \
+	smtpd_banner="\$myhostname ESMTP Hi, I'm a Ocean3inaBox (Ubuntu/Postfix; see https://Ocean3inaBox.email/)" \
 	mydestination=localhost
 
 # Tweak some queue settings:
@@ -74,7 +74,7 @@ tools/editconf.py /etc/postfix/main.cf \
 # This beecame supported in a backported fix in package version 3.6.4-1ubuntu1.3. It is
 # unnecessary in Postfix 3.9+ where this is the default. The "short-term" workarounds
 # that we previously had are reverted to postfix defaults (though smtpd_discard_ehlo_keywords
-# was never included in a released version of Mail-in-a-Box).
+# was never included in a released version of Ocean3inaBox).
 tools/editconf.py /etc/postfix/main.cf -e \
        smtpd_data_restrictions= \
        smtpd_discard_ehlo_keywords=
@@ -213,8 +213,8 @@ tools/editconf.py /etc/postfix/main.cf \
 # virtual_transport to `lmtp:unix:private/dovecot-lmtp`.
 tools/editconf.py /etc/postfix/main.cf "virtual_transport=lmtp:[127.0.0.1]:10025"
 # Clear the lmtp_destination_recipient_limit setting which in previous
-# versions of Mail-in-a-Box was set to 1 because of a spampd bug.
-# See https://github.com/mail-in-a-box/mailinabox/issues/1523.
+# versions of Ocean3inaBox was set to 1 because of a spampd bug.
+# See https://github.com/Ocean3inaBox/Ocean3inaBox/issues/1523.
 tools/editconf.py /etc/postfix/main.cf  -e lmtp_destination_recipient_limit=
 
 
@@ -273,10 +273,10 @@ chown -R postgrey:postgrey "$STORAGE_ROOT/mail/postgrey/"
 chmod 700 "$STORAGE_ROOT/mail/postgrey/"{,db}
 
 # We are going to setup a newer whitelist for postgrey, the version included in the distribution is old
-cat > /etc/cron.daily/mailinabox-postgrey-whitelist << EOF;
+cat > /etc/cron.daily/Ocean3inaBox-postgrey-whitelist << EOF;
 #!/bin/bash
 
-# Mail-in-a-Box
+# Ocean3inaBox
 
 # check we have a postgrey_whitelist_clients file and that it is not older than 28 days
 if [ ! -f /etc/postgrey/whitelist_clients ] || find /etc/postgrey/whitelist_clients -mtime +28 | grep -q '.' ; then
@@ -295,8 +295,8 @@ if [ ! -f /etc/postgrey/whitelist_clients ] || find /etc/postgrey/whitelist_clie
     fi
 fi
 EOF
-chmod +x /etc/cron.daily/mailinabox-postgrey-whitelist
-/etc/cron.daily/mailinabox-postgrey-whitelist
+chmod +x /etc/cron.daily/Ocean3inaBox-postgrey-whitelist
+/etc/cron.daily/Ocean3inaBox-postgrey-whitelist
 
 # Increase the message size limit from 10MB to 128MB.
 # The same limit is specified in nginx.conf for mail submitted via webmail and Z-Push.
