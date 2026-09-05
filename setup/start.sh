@@ -133,6 +133,20 @@ function run_setup_step {
 	fi
 }
 
+function clean_and_restart_setup {
+	input_box "Clean and new installation" \
+		"THIS PERMANENTLY DELETES all Ocean3inaBox mail, websites, databases, backups, configuration, firewall rules, and installed services.\n\nType DELETE to continue:" \
+		"" \
+		CLEAN_CONFIRMATION
+	if [ "$CLEAN_CONFIRMATION_EXITCODE" -ne 0 ] || [ "$CLEAN_CONFIRMATION" != "DELETE" ]; then
+		echo "Clean and new cancelled."
+		exit 1
+	fi
+	source setup/uninstall.sh
+	uninstall_ocean3inabox
+	exec /bin/bash "$PWD/setup/start.sh"
+}
+
 if [ -f "$SETUP_STATE_FILE" ]; then
 	NEXT_SETUP_STEP=$(cat "$SETUP_STATE_FILE")
 	if ! [[ "$NEXT_SETUP_STEP" =~ ^[1-9][0-9]*$ ]] || [ "$NEXT_SETUP_STEP" -gt 22 ]; then
@@ -142,7 +156,7 @@ if [ -f "$SETUP_STATE_FILE" ]; then
 	if [ -z "${NONINTERACTIVE:-}" ]; then
 		input_menu "Resume Ocean3inaBox Setup" \
 			"A previous setup run stopped at step $NEXT_SETUP_STEP. What do you want to do?" \
-			"resume^Resume from the first unfinished step^restart^Run all setup steps again" \
+			"resume^Resume from the first unfinished step^restart^Run all setup steps again^clean^Delete everything and start a clean installation" \
 			SETUP_ACTION
 		if [ "$SETUP_ACTION_EXITCODE" -ne 0 ]; then
 			exit
@@ -150,6 +164,9 @@ if [ -f "$SETUP_STATE_FILE" ]; then
 		if [ "$SETUP_ACTION" = restart ]; then
 			NEXT_SETUP_STEP=1
 			set_next_setup_step "$NEXT_SETUP_STEP"
+		fi
+		if [ "$SETUP_ACTION" = clean ]; then
+			clean_and_restart_setup
 		fi
 	fi
 	if [ "$NEXT_SETUP_STEP" = 1 ]; then
@@ -160,6 +177,18 @@ if [ -f "$SETUP_STATE_FILE" ]; then
 else
 	NEXT_SETUP_STEP=1
 	set_next_setup_step "$NEXT_SETUP_STEP"
+	if [ -n "${DEFAULT_PRIMARY_HOSTNAME:-}" ] && [ -z "${NONINTERACTIVE:-}" ]; then
+		input_menu "Ocean3inaBox Setup" \
+			"An existing Ocean3inaBox installation was detected. What do you want to do?" \
+			"resume^Continue with the existing installation^restart^Run all setup steps again^clean^Delete everything and start a clean installation" \
+			SETUP_ACTION
+		if [ "$SETUP_ACTION_EXITCODE" -ne 0 ]; then
+			exit
+		fi
+		if [ "$SETUP_ACTION" = clean ]; then
+			clean_and_restart_setup
+		fi
+	fi
 fi
 
 # Start service configuration. Each script is idempotent, so a failed step can
