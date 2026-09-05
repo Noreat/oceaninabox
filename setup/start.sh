@@ -103,46 +103,105 @@ PRIVATE_IPV6=$PRIVATE_IPV6
 MTA_STS_MODE=${DEFAULT_MTA_STS_MODE:-enforce}
 EOF
 
-# Start service configuration.
-source setup/system.sh
-source setup/ssl.sh
-source setup/dns.sh
-source setup/mail-postfix.sh
-source setup/mail-dovecot.sh
-source setup/mail-users.sh
-source setup/dkim.sh
-source setup/spamassassin.sh
-source setup/web.sh
-source setup/webmail.sh
-source setup/nextcloud.sh
-source setup/zpush.sh
-source setup/management.sh
-source setup/munin.sh
+SETUP_STATE_FILE=/var/lib/Ocean3inaBox/setup-state
+
+function set_next_setup_step {
+	local step=$1
+	local temporary_state_file="$SETUP_STATE_FILE.tmp"
+
+	umask 077
+	mkdir -p "$(dirname "$SETUP_STATE_FILE")"
+	printf '%s\n' "$step" > "$temporary_state_file"
+	mv "$temporary_state_file" "$SETUP_STATE_FILE"
+}
+
+function run_setup_step {
+	local step=$1
+	local description=$2
+	local script=$3
+
+	if [ "$NEXT_SETUP_STEP" -le "$step" ]; then
+		echo
+		echo "Running setup step: $description"
+		source "$script"
+		NEXT_SETUP_STEP=$((step + 1))
+		set_next_setup_step "$NEXT_SETUP_STEP"
+	fi
+}
+
+if [ -f "$SETUP_STATE_FILE" ]; then
+	NEXT_SETUP_STEP=$(cat "$SETUP_STATE_FILE")
+	if ! [[ "$NEXT_SETUP_STEP" =~ ^[1-9][0-9]*$ ]] || [ "$NEXT_SETUP_STEP" -gt 22 ]; then
+		echo "ERROR: Invalid setup resume state in $SETUP_STATE_FILE."
+		exit 1
+	fi
+	echo "Resuming Ocean3inaBox setup at step $NEXT_SETUP_STEP."
+else
+	NEXT_SETUP_STEP=1
+	set_next_setup_step "$NEXT_SETUP_STEP"
+fi
+
+# Start service configuration. Each script is idempotent, so a failed step can
+# be safely rerun without repeating the successfully completed earlier steps.
+run_setup_step 1 "system configuration" setup/system.sh
+run_setup_step 2 "TLS configuration" setup/ssl.sh
+run_setup_step 3 "DNS configuration" setup/dns.sh
+run_setup_step 4 "Postfix configuration" setup/mail-postfix.sh
+run_setup_step 5 "Dovecot configuration" setup/mail-dovecot.sh
+run_setup_step 6 "mail user configuration" setup/mail-users.sh
+run_setup_step 7 "DKIM configuration" setup/dkim.sh
+run_setup_step 8 "spam filtering configuration" setup/spamassassin.sh
+run_setup_step 9 "web server configuration" setup/web.sh
+run_setup_step 10 "webmail configuration" setup/webmail.sh
+run_setup_step 11 "Nextcloud configuration" setup/nextcloud.sh
+run_setup_step 12 "Z-Push configuration" setup/zpush.sh
+run_setup_step 13 "management service configuration" setup/management.sh
+run_setup_step 14 "Munin configuration" setup/munin.sh
 
 # Wait for the management daemon to start...
-until nc -z -w 4 127.0.0.1 10222
-do
-	echo "Waiting for the Ocean3inaBox management daemon to start..."
-	sleep 2
-done
+if [ "$NEXT_SETUP_STEP" -le 15 ]; then
+	until nc -z -w 4 127.0.0.1 10222
+	do
+		echo "Waiting for the Ocean3inaBox management daemon to start..."
+		sleep 2
+	done
+	NEXT_SETUP_STEP=16
+	set_next_setup_step "$NEXT_SETUP_STEP"
+fi
 
 # ...and then have it write the DNS and nginx configuration files and start those
 # services.
-tools/dns_update
-tools/web_update
+if [ "$NEXT_SETUP_STEP" -le 16 ]; then
+	tools/dns_update
+	NEXT_SETUP_STEP=17
+	set_next_setup_step "$NEXT_SETUP_STEP"
+fi
+if [ "$NEXT_SETUP_STEP" -le 17 ]; then
+	tools/web_update
+	NEXT_SETUP_STEP=18
+	set_next_setup_step "$NEXT_SETUP_STEP"
+fi
 
 # Give fail2ban another restart. The log files may not all have been present when
 # fail2ban was first configured, but they should exist now.
-restart_service fail2ban
+if [ "$NEXT_SETUP_STEP" -le 18 ]; then
+	restart_service fail2ban
+	NEXT_SETUP_STEP=19
+	set_next_setup_step "$NEXT_SETUP_STEP"
+fi
 
 # If there aren't any mail users yet, create one.
-source setup/firstuser.sh
+if [ "$NEXT_SETUP_STEP" -le 19 ]; then
+	source setup/firstuser.sh
+	NEXT_SETUP_STEP=20
+	set_next_setup_step "$NEXT_SETUP_STEP"
+fi
 
 # Register with Let's Encrypt, including agreeing to the Terms of Service.
 # We'd let certbot ask the user interactively, but when this script is
 # run in the recommended curl-pipe-to-bash method there is no TTY and
 # certbot will fail if it tries to ask.
-if [ ! -d "$STORAGE_ROOT/ssl/lets_encrypt/accounts/acme-v02.api.letsencrypt.org/" ]; then
+if [ "$NEXT_SETUP_STEP" -le 20 ] && [ ! -d "$STORAGE_ROOT/ssl/lets_encrypt/accounts/acme-v02.api.letsencrypt.org/" ]; then
 echo
 echo "-----------------------------------------------"
 echo "Ocean3inaBox uses Let's Encrypt to provision free SSL/TLS certificates"
@@ -151,8 +210,21 @@ echo "agreeing you to their subscriber agreement. See https://letsencrypt.org."
 echo
 certbot register --register-unsafely-without-email --agree-tos --config-dir "$STORAGE_ROOT/ssl/lets_encrypt"
 fi
+if [ "$NEXT_SETUP_STEP" -le 20 ]; then
+	NEXT_SETUP_STEP=21
+	set_next_setup_step "$NEXT_SETUP_STEP"
+fi
+
+if [ "$NEXT_SETUP_STEP" -le 21 ]; then
+	for service in bind9 dovecot fail2ban munin nginx nsd Ocean3inaBox opendkim opendmarc php"$PHP_VER"-fpm postfix spampd; do
+		restart_service "$service"
+	done
+	NEXT_SETUP_STEP=22
+	set_next_setup_step "$NEXT_SETUP_STEP"
+fi
 
 # Done.
+rm -f "$SETUP_STATE_FILE"
 echo
 echo "-----------------------------------------------"
 echo

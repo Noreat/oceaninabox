@@ -67,6 +67,7 @@ Begin the installation.
 	$ sudo setup/start.sh
 
 The installation will install, uninstall, and configure packages to turn the machine into a working, good mail server.
+If setup stops because of an error, fix the reported issue and run `sudo setup/start.sh` again. Setup resumes at the first unfinished phase and restarts all managed services after it completes.
 
 For help, DO NOT contact Josh directly --- I don't do tech support by email or tweet (no exceptions).
 
