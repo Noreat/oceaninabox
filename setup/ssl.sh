@@ -86,7 +86,9 @@ if [ ! -f "$STORAGE_ROOT/ssl/ssl_certificate.pem" ]; then
 	rm -f $CSR
 
 	# Symlink the certificate into the system certificate path, so system services
-	# can find it.
+	# can find it. A previous interrupted setup can leave a dangling or cyclic
+	# link here; remove it before installing the new canonical link.
+	rm -f "$STORAGE_ROOT/ssl/ssl_certificate.pem"
 	ln -s "$CERT" "$STORAGE_ROOT/ssl/ssl_certificate.pem"
 fi
 
