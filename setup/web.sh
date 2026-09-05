@@ -145,6 +145,12 @@ if [ ! -f "$STORAGE_ROOT/www/default/index.html" ]; then
 fi
 chown -R "$STORAGE_USER" "$STORAGE_ROOT/www"
 
+# Install WordPress as the primary website. It replaces only the generated
+# default homepage and refuses to overwrite an existing custom website.
+if [ "$INSTALL_WORDPRESS" = 1 ]; then
+	source setup/wordpress.sh
+fi
+
 # Start services.
 restart_service nginx
 restart_service php"$PHP_VER"-fpm

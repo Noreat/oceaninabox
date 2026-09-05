@@ -88,9 +88,13 @@ def do_web_update(env):
 	template1 = read_conf("nginx-alldomains.conf")
 	template2 = read_conf("nginx-primaryonly.conf")
 	template3 = "\trewrite ^(.*) https://$REDIRECT_DOMAIN$1 permanent;\n"
+	template4 = read_conf("nginx-wordpress.conf")
 
 	# Add the PRIMARY_HOST configuration first so it becomes nginx's default server.
-	nginx_conf += make_domain_config(env['PRIMARY_HOSTNAME'], [template0, template1, template2], ssl_certificates, env)
+	primary_templates = [template0, template1, template2]
+	if env.get("INSTALL_WORDPRESS") == "1":
+		primary_templates.append(template4)
+	nginx_conf += make_domain_config(env['PRIMARY_HOSTNAME'], primary_templates, ssl_certificates, env)
 
 	# Add configuration all other web domains.
 	has_root_proxy_or_redirect = get_web_domains_with_root_overrides(env)
@@ -270,4 +274,3 @@ def get_web_domains_info(env):
 		}
 		for domain in get_web_domains(env)
 	]
-

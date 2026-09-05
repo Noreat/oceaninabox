@@ -217,6 +217,23 @@ if [ "$INSTALL_NEXTCLOUD" != 0 ] && [ "$INSTALL_NEXTCLOUD" != 1 ]; then
 	exit 1
 fi
 
+# New installations provide WordPress as the default website. Existing
+# installations keep their current website unless WordPress was previously
+# enabled or the administrator explicitly enables it.
+if [ -z "${INSTALL_WORDPRESS:-}" ]; then
+	if [ -n "${DEFAULT_INSTALL_WORDPRESS:-}" ]; then
+		INSTALL_WORDPRESS=$DEFAULT_INSTALL_WORDPRESS
+	elif [ -n "${FIRST_TIME_SETUP:-}" ]; then
+		INSTALL_WORDPRESS=1
+	else
+		INSTALL_WORDPRESS=0
+	fi
+fi
+if [ "$INSTALL_WORDPRESS" != 0 ] && [ "$INSTALL_WORDPRESS" != 1 ]; then
+	echo "INSTALL_WORDPRESS must be set to 0 or 1."
+	exit 1
+fi
+
 # Show the configuration, since the user may have not entered it manually.
 echo
 echo "Primary Hostname: $PRIMARY_HOSTNAME"
@@ -237,5 +254,10 @@ if [ "$INSTALL_NEXTCLOUD" = 1 ]; then
 	echo "Nextcloud: enabled"
 else
 	echo "Nextcloud: disabled"
+fi
+if [ "$INSTALL_WORDPRESS" = 1 ]; then
+	echo "WordPress: enabled"
+else
+	echo "WordPress: disabled"
 fi
 echo

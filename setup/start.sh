@@ -102,6 +102,7 @@ PRIVATE_IP=$PRIVATE_IP
 PRIVATE_IPV6=$PRIVATE_IPV6
 MTA_STS_MODE=${DEFAULT_MTA_STS_MODE:-enforce}
 INSTALL_NEXTCLOUD=$INSTALL_NEXTCLOUD
+INSTALL_WORDPRESS=$INSTALL_WORDPRESS
 EOF
 
 SETUP_STATE_FILE=/var/lib/Ocean3inaBox/setup-state
@@ -242,7 +243,7 @@ if [ "$NEXT_SETUP_STEP" -le 20 ]; then
 fi
 
 if [ "$NEXT_SETUP_STEP" -le 21 ]; then
-	for service in bind9 dovecot fail2ban munin nginx nsd Ocean3inaBox opendkim opendmarc php"$PHP_VER"-fpm postfix spampd; do
+	for service in bind9 dovecot fail2ban mariadb munin nginx nsd Ocean3inaBox opendkim opendmarc php"$PHP_VER"-fpm postfix spampd; do
 		restart_service "$service"
 	done
 	NEXT_SETUP_STEP=22

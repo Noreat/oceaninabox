@@ -67,7 +67,7 @@ Begin the installation.
 	$ sudo setup/start.sh
 
 The installation will install, uninstall, and configure packages to turn the machine into a working, good mail server.
-During interactive setup, you can choose whether to install Nextcloud for contacts and calendars. It is disabled by default; set `INSTALL_NEXTCLOUD=1` when using non-interactive setup to enable it.
+New installations include WordPress and MariaDB as the primary website. Complete the WordPress administrator setup at `https://<your-primary-hostname>/wp-admin/install.php`. During interactive setup, you can choose whether to install Nextcloud for contacts and calendars. It is disabled by default; set `INSTALL_NEXTCLOUD=1` when using non-interactive setup to enable it. Existing installations are unchanged unless `INSTALL_WORDPRESS=1` is set.
 If setup stops because of an error, fix the reported issue and run `sudo setup/start.sh` again. Setup resumes at the first unfinished phase and restarts all managed services after it completes.
 
 For help, DO NOT contact Josh directly --- I don't do tech support by email or tweet (no exceptions).
