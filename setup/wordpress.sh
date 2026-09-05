@@ -82,6 +82,7 @@ EOF
 	chown root:www-data "$WORDPRESS_ROOT/wp-config.php"
 	chmod 640 "$WORDPRESS_ROOT/wp-config.php"
 
+	mkdir -p "$(dirname "$WORDPRESS_USER_SCRIPT")"
 	sed "s#/home/user-data/www/default#$WORDPRESS_ROOT#" conf/wordpress-user.php > "$WORDPRESS_USER_SCRIPT"
 	chown root:root "$WORDPRESS_USER_SCRIPT"
 	chmod 700 "$WORDPRESS_USER_SCRIPT"
