@@ -206,8 +206,10 @@ function input_menu {
 	declare -n result=$4
 	declare -n result_code=$4_EXITCODE
 	local IFS=^$'\n'
+	local -a menu_items
+	read -r -a menu_items <<< "$3"
 	set +e
-	result=$(dialog --stdout --title "$1" --menu "$2" 0 0 0 "$3")
+	result=$(dialog --stdout --title "$1" --menu "$2" 0 0 0 "${menu_items[@]}")
 	result_code=$?
 	set -e
 }
