@@ -101,6 +101,7 @@ PUBLIC_IPV6=$PUBLIC_IPV6
 PRIVATE_IP=$PRIVATE_IP
 PRIVATE_IPV6=$PRIVATE_IPV6
 MTA_STS_MODE=${DEFAULT_MTA_STS_MODE:-enforce}
+INSTALL_NEXTCLOUD=$INSTALL_NEXTCLOUD
 EOF
 
 SETUP_STATE_FILE=/var/lib/Ocean3inaBox/setup-state
@@ -153,7 +154,15 @@ run_setup_step 7 "DKIM configuration" setup/dkim.sh
 run_setup_step 8 "spam filtering configuration" setup/spamassassin.sh
 run_setup_step 9 "web server configuration" setup/web.sh
 run_setup_step 10 "webmail configuration" setup/webmail.sh
-run_setup_step 11 "Nextcloud configuration" setup/nextcloud.sh
+if [ "$NEXT_SETUP_STEP" -le 11 ]; then
+	if [ "$INSTALL_NEXTCLOUD" = 1 ]; then
+		run_setup_step 11 "Nextcloud configuration" setup/nextcloud.sh
+	else
+		echo "Skipping Nextcloud configuration."
+		NEXT_SETUP_STEP=12
+		set_next_setup_step "$NEXT_SETUP_STEP"
+	fi
+fi
 run_setup_step 12 "Z-Push configuration" setup/zpush.sh
 run_setup_step 13 "management service configuration" setup/management.sh
 run_setup_step 14 "Munin configuration" setup/munin.sh

@@ -371,10 +371,15 @@ systemctl restart systemd-resolved
 # Configure the Fail2Ban installation to prevent dumb bruce-force attacks against dovecot, postfix, ssh, etc.
 rm -f /etc/fail2ban/jail.local # we used to use this file but don't anymore
 rm -f /etc/fail2ban/jail.d/defaults-debian.conf # removes default config so we can manage all of fail2ban rules in one config
+NEXTCLOUD_FAIL2BAN_ENABLED=false
+if [ "${INSTALL_NEXTCLOUD:-1}" = 1 ]; then
+	NEXTCLOUD_FAIL2BAN_ENABLED=true
+fi
 cat conf/fail2ban/jails.conf \
     | sed "s/PUBLIC_IPV6/$PUBLIC_IPV6/g" \
 	| sed "s/PUBLIC_IP/$PUBLIC_IP/g" \
 	| sed "s#STORAGE_ROOT#$STORAGE_ROOT#" \
+	| sed "s/NEXTCLOUD_FAIL2BAN_ENABLED/$NEXTCLOUD_FAIL2BAN_ENABLED/" \
 	> /etc/fail2ban/jail.d/Ocean3inaBox.conf
 cp -f conf/fail2ban/filter.d/* /etc/fail2ban/filter.d/
 

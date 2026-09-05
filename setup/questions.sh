@@ -192,6 +192,31 @@ if [ -z "${STORAGE_ROOT:-}" ]; then
 	STORAGE_ROOT=$([[ -z "${DEFAULT_STORAGE_ROOT:-}" ]] && echo "/home/$STORAGE_USER" || echo "$DEFAULT_STORAGE_ROOT")
 fi
 
+# Install Nextcloud only when explicitly requested for a new installation.
+# Existing installations remain enabled so that subsequent setup runs continue
+# to maintain and upgrade the already installed service.
+if [ -z "${INSTALL_NEXTCLOUD:-}" ]; then
+	if [ -n "${DEFAULT_INSTALL_NEXTCLOUD:-}" ]; then
+		INSTALL_NEXTCLOUD=$DEFAULT_INSTALL_NEXTCLOUD
+	elif [ -d /usr/local/lib/owncloud ]; then
+		INSTALL_NEXTCLOUD=1
+	elif [ -n "${NONINTERACTIVE:-}" ]; then
+		INSTALL_NEXTCLOUD=0
+	else
+		input_menu "Nextcloud Installation" \
+			"Do you want to install Nextcloud for contacts and calendars?" \
+			"0^Do not install Nextcloud^1^Install Nextcloud" \
+			INSTALL_NEXTCLOUD
+		if [ "$INSTALL_NEXTCLOUD_EXITCODE" -ne 0 ]; then
+			exit
+		fi
+	fi
+fi
+if [ "$INSTALL_NEXTCLOUD" != 0 ] && [ "$INSTALL_NEXTCLOUD" != 1 ]; then
+	echo "INSTALL_NEXTCLOUD must be set to 0 or 1."
+	exit 1
+fi
+
 # Show the configuration, since the user may have not entered it manually.
 echo
 echo "Primary Hostname: $PRIMARY_HOSTNAME"
@@ -207,5 +232,10 @@ if [ "$PRIVATE_IPV6" != "$PUBLIC_IPV6" ]; then
 fi
 if [ -f /usr/bin/git ] && [ -d .git ]; then
 	echo "Ocean3inaBox Version: $(git describe --always)"
+fi
+if [ "$INSTALL_NEXTCLOUD" = 1 ]; then
+	echo "Nextcloud: enabled"
+else
+	echo "Nextcloud: disabled"
 fi
 echo
