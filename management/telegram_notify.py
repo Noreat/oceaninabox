@@ -1,4 +1,4 @@
-#!/usr/local/lib/mailinabox/env/bin/python3
+#!/usr/local/lib/Ocean3inaBox/env/bin/python3
 """Send Telegram reports and process commands from configured recipients."""
 
 import argparse

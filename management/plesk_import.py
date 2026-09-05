@@ -1,4 +1,4 @@
-#!/usr/local/lib/mailinabox/env/bin/python3
+#!/usr/local/lib/Ocean3inaBox/env/bin/python3
 """Import Plesk mail accounts, aliases, and messages into Mail-in-a-Box.
 
 The source Plesk host is queried through SSH using its ``plesk bin mail``
