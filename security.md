@@ -1,7 +1,7 @@
 Ocean3inaBox Security Guide
 ============================
 
-Ocean3inaBox turns a fresh Ubuntu 22.04 LTS 64-bit machine into a mail server appliance by installing and configuring various components.
+Ocean3inaBox turns a fresh Ubuntu 22.04 or 24.04 LTS 64-bit machine into a mail server appliance by installing and configuring various components.
 
 This page documents the security posture of Ocean3inaBox. The term “box” is used below to mean a configured Ocean3inaBox.
 

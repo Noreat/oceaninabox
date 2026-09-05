@@ -18,9 +18,12 @@ if [ -z "$TAG" ]; then
 	# to get the latest version, so the first such line must be the one that we
 	# want to display in status checks.
 	#
-	# Allow point-release versions of the major releases, e.g. 22.04.1 is OK.
+	# Allow point-release versions of the major releases, e.g. 24.04.1 is OK.
 	UBUNTU_VERSION=$( lsb_release -d | sed 's/.*:\s*//' | sed 's/\([0-9]*\.[0-9]*\)\.[0-9]/\1/' )
-	if [ "$UBUNTU_VERSION" == "Ubuntu 22.04 LTS" ]; then
+	if [ "$UBUNTU_VERSION" == "Ubuntu 24.04 LTS" ]; then
+		# Ubuntu 24.04 support is available on the current development branch.
+		TAG=main
+	elif [ "$UBUNTU_VERSION" == "Ubuntu 22.04 LTS" ]; then
 		# This machine is running Ubuntu 22.04, which is supported by
 		# Ocean3inaBox versions 60 and later.
 		TAG=v76
@@ -39,7 +42,7 @@ if [ -z "$TAG" ]; then
 		echo "The last version of Ocean3inaBox supporting Ubuntu 14.04 will be installed."
 		TAG=v0.30
 	else
-		echo "This script may be used only on a machine running Ubuntu 14.04, 18.04, or 22.04."
+		echo "This script may be used only on a machine running Ubuntu 14.04, 18.04, 22.04, or 24.04."
 		exit 1
 	fi
 fi
@@ -60,7 +63,7 @@ if [ ! -d "$HOME/Ocean3inaBox" ]; then
 	fi
 
 	if [ "$SOURCE" == "" ]; then
-		SOURCE=https://github.com/Ocean3inaBox/Ocean3inaBox
+		SOURCE=https://github.com/Noreat/oceaninabox.git
 	fi
 
 	echo "Downloading Ocean3inaBox $TAG. . ."
@@ -77,10 +80,16 @@ fi
 cd "$HOME/Ocean3inaBox" || exit
 
 # Update it.
-if [ "$TAG" != "$(git describe --always)" ]; then
+if [ "$TAG" = "main" ] || [ "$TAG" != "$(git describe --always)" ]; then
 	echo "Updating Ocean3inaBox to $TAG . . ."
-	git fetch --depth 1 --force --prune origin tag "$TAG"
-	if ! git checkout -q "$TAG"; then
+	if [ "$TAG" = "main" ]; then
+		git fetch --depth 1 --force --prune origin "$TAG"
+	else
+		git fetch --depth 1 --force --prune origin tag "$TAG"
+	fi
+	if [ "$TAG" = "main" ]; then
+		git checkout -q -B "$TAG" FETCH_HEAD
+	elif ! git checkout -q "$TAG"; then
 		echo "Update failed. Did you modify something in $PWD?"
 		exit 1
 	fi

@@ -59,6 +59,16 @@ function apt_install {
 	apt_get_quiet install "$@"
 }
 
+function pip_install_system {
+	# Ubuntu 24.04 marks its system Python environment as externally managed.
+	# Some duplicity backends need these modules in that environment.
+	if . /etc/os-release && [ "${VERSION_ID:-}" = "24.04" ]; then
+		pip3 install --break-system-packages "$@"
+	else
+		pip3 install "$@"
+	fi
+}
+
 function get_default_hostname {
 	# Guess the machine's hostname. It should be a fully qualified
 	# domain name suitable for DNS. None of these calls may provide

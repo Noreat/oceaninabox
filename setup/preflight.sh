@@ -8,12 +8,12 @@ if [[ $EUID -ne 0 ]]; then
 	exit 1
 fi
 
-# Check that we are running on Ubuntu 22.04 LTS (or 22.04.xx).
+# Check that we are running on a supported Ubuntu LTS release.
 # Pull in the variables defined in /etc/os-release but in a
 # namespace to avoid polluting our variables.
 source <(cat /etc/os-release | sed s/^/OS_RELEASE_/)
-if [ "${OS_RELEASE_ID:-}" != "ubuntu" ] || [ "${OS_RELEASE_VERSION_ID:-}" != "22.04" ]; then
-	echo "Ocean3inaBox only supports being installed on Ubuntu 22.04, sorry. You are running:"
+if [ "${OS_RELEASE_ID:-}" != "ubuntu" ] || { [ "${OS_RELEASE_VERSION_ID:-}" != "22.04" ] && [ "${OS_RELEASE_VERSION_ID:-}" != "24.04" ]; }; then
+	echo "Ocean3inaBox only supports being installed on Ubuntu 22.04 or 24.04, sorry. You are running:"
 	echo
 	echo "${OS_RELEASE_ID:-"Unknown linux distribution"} ${OS_RELEASE_VERSION_ID:-}"
 	echo
