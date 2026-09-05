@@ -163,6 +163,24 @@ function restart_service {
 	hide_output service "$1" restart
 }
 
+function install_systemd_unit {
+	local source=$1
+	local destination=$2
+	local unit_name
+	unit_name=$(basename "$destination")
+	local linked_unit=/etc/systemd/system/"$unit_name"
+
+	cp --remove-destination "$source" "$destination"
+
+	# Older setup runs created this redundant link. A unit in /lib/systemd/system
+	# must not be linked again or systemctl refuses to enable it.
+	if [ -L "$linked_unit" ] && [ "$(readlink -f "$linked_unit")" = "$destination" ]; then
+		rm -f "$linked_unit"
+	fi
+
+	hide_output systemctl daemon-reload
+}
+
 ## Dialog Functions ##
 function message_box {
 	dialog --title "$1" --msgbox "$2" 0 0

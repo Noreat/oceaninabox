@@ -98,9 +98,7 @@ export PYTHONPATH=$PWD/management
 exec gunicorn -b 127.0.0.1:10222 -w 1 --timeout 630 wsgi:app
 EOF
 chmod +x $inst_dir/start
-cp --remove-destination conf/Ocean3inaBox.service /lib/systemd/system/Ocean3inaBox.service # target was previously a symlink so remove it first
-hide_output systemctl link -f /lib/systemd/system/Ocean3inaBox.service
-hide_output systemctl daemon-reload
+install_systemd_unit conf/Ocean3inaBox.service /lib/systemd/system/Ocean3inaBox.service
 hide_output systemctl enable Ocean3inaBox.service
 
 # Perform nightly tasks at 3am in system time: take a backup, run
