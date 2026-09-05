@@ -136,7 +136,24 @@ if [ -f "$SETUP_STATE_FILE" ]; then
 		echo "ERROR: Invalid setup resume state in $SETUP_STATE_FILE."
 		exit 1
 	fi
-	echo "Resuming Ocean3inaBox setup at step $NEXT_SETUP_STEP."
+	if [ -z "${NONINTERACTIVE:-}" ]; then
+		input_menu "Resume Ocean3inaBox Setup" \
+			"A previous setup run stopped at step $NEXT_SETUP_STEP. What do you want to do?" \
+			"resume^Resume from the first unfinished step^restart^Run all setup steps again" \
+			SETUP_ACTION
+		if [ "$SETUP_ACTION_EXITCODE" -ne 0 ]; then
+			exit
+		fi
+		if [ "$SETUP_ACTION" = restart ]; then
+			NEXT_SETUP_STEP=1
+			set_next_setup_step "$NEXT_SETUP_STEP"
+		fi
+	fi
+	if [ "$NEXT_SETUP_STEP" = 1 ]; then
+		echo "Running all Ocean3inaBox setup steps."
+	else
+		echo "Resuming Ocean3inaBox setup at step $NEXT_SETUP_STEP."
+	fi
 else
 	NEXT_SETUP_STEP=1
 	set_next_setup_step "$NEXT_SETUP_STEP"
