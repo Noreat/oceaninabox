@@ -25,6 +25,7 @@ hide_output pip_install_system --upgrade b2sdk boto3
 # used by the management daemon.
 inst_dir=/usr/local/lib/Ocean3inaBox
 mkdir -p $inst_dir
+chmod 755 "$inst_dir"
 venv=$inst_dir/env
 if [ ! -d $venv ]; then
 	hide_output python3 -m venv $venv
@@ -58,6 +59,7 @@ fi
 assets_dir=$inst_dir/vendor/assets
 rm -rf $assets_dir
 mkdir -p $assets_dir
+chmod 755 "$inst_dir/vendor" "$assets_dir"
 
 # jQuery CDN URL
 jquery_version=2.2.4
@@ -75,6 +77,7 @@ wget_verify $bootstrap_url 0bb64c67c2552014d48ab4db81c2e8c01781f580 /tmp/bootstr
 unzip -q /tmp/bootstrap.zip -d $assets_dir
 mv $assets_dir/bootstrap-$bootstrap_version-dist $assets_dir/bootstrap
 rm -f /tmp/bootstrap.zip
+chmod -R a+rX "$assets_dir"
 
 # Create an init script to start the management daemon and keep it
 # running after a reboot.

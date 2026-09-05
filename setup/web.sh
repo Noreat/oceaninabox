@@ -140,6 +140,7 @@ chmod a+r /var/lib/Ocean3inaBox/mta-sts.txt
 # make a default homepage
 if [ -d "$STORAGE_ROOT/www/static" ]; then mv "$STORAGE_ROOT/www/static" "$STORAGE_ROOT/www/default"; fi # migration #NODOC
 mkdir -p "$STORAGE_ROOT/www/default"
+chmod 755 "$STORAGE_ROOT/www" "$STORAGE_ROOT/www/default"
 if [ ! -f "$STORAGE_ROOT/www/default/index.html" ]; then
 	cp conf/www_default.html "$STORAGE_ROOT/www/default/index.html"
 fi
